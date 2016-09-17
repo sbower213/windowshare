@@ -40,7 +40,7 @@ public class InputListener implements NetworkListener {
 			e = gson.fromJson(message, MouseMoveEvent.class);
 		} else if (e.type.equals("click") || e.type.equals("release")) {
 			e = gson.fromJson(message, MouseUpDownEvent.class);
-		} else if (e.type.equals("leftScreen")) {
+		} else if (e.type.equals("leftOriginalScreen")) {
 			e = gson.fromJson(message, MouseExitScreenEvent.class);
 		}
 		eventQueue.add(e);
@@ -108,6 +108,7 @@ public class InputListener implements NetworkListener {
 					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 					int width = (int)screenSize.getWidth();
 					int height = (int)screenSize.getHeight();
+					System.out.println("remote control!");
 					robot.mouseMove(width, (int) (height * mlose.height));
 				}
 				else {
