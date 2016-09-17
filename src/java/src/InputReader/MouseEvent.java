@@ -7,7 +7,7 @@ import Networking.WindowShareNode;
 public class MouseEvent {
 	static WindowShareNode network;
 	
-	String type;
+	public String type;
 	transient Gson gson;
 	
 	public MouseEvent() {
