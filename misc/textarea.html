@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <script>
+            
+            window.onload = function() {
+                var keyAlert = function(obj) {
+                    console.log(obj)
+                    console.log(obj.value)
+                    obj.setAttribute("value",obj.value);
+                    obj.innerHTML = obj.value;
+                };
+                textA = document.getElementsByTagName("textarea");
+                for(i = 0; i < textA.length; i++) {
+                    textA[i].onkeyup = function(){keyAlert(this)};
+                    textA[i].innerHTML = "";
+                    console.log(textA[i])
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <textarea></textarea>
+        <textarea></textarea>
+        <textarea></textarea>
+        <textarea></textarea>
+        <textarea></textarea>
+    </body>
+</html>
