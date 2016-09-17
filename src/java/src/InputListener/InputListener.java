@@ -88,10 +88,10 @@ public class InputListener implements NetworkListener {
 						int width = (int)screenSize.getWidth();
 						int height = (int)screenSize.getHeight();
 						if (newX >= width) {
-							MouseExitScreenEvent e = new MouseExitScreenEvent(newY / height, false);
+							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false);
 							e.send();
 							remoteControl = false;
-							continue;
+							break;
 						}
 						robot.mouseMove(newX, newY);
 						curTime = System.currentTimeMillis();
@@ -108,8 +108,7 @@ public class InputListener implements NetworkListener {
 					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 					int width = (int)screenSize.getWidth();
 					int height = (int)screenSize.getHeight();
-					System.out.println("remote control!");
-					robot.mouseMove(width, (int) (height * mlose.height));
+					robot.mouseMove(width - 3, (int) (height * mlose.height));
 				}
 				else {
 					// do other things with other events
