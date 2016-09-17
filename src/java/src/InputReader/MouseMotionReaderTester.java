@@ -4,6 +4,8 @@ import java.awt.AWTException;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
+import Networking.WindowShareClient;
+
 public class MouseMotionReaderTester {
 
 	public static void main(String[] args) {

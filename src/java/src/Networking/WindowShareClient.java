@@ -5,19 +5,25 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
 
-public class WindowShareClient {
+import InputListener.InputListener;
+
+public class WindowShareClient implements WindowShareNode {
 	public static final String SERVER_IP = "127.0.0.1";
 	
 	private Socket sock;
 	private BufferedReader in;
 	private PrintWriter out;
+	private Set<InputListener> listeners;
 	
 	public WindowShareClient(String serverip) {
 		try {
 			sock = new Socket(serverip, WindowShareServer.PORT);
 			in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			out = new PrintWriter(sock.getOutputStream(), true);
+			listeners = new HashSet<InputListener>();
 			new Thread(new ServerThread()).start();
 		} catch (UnknownHostException e) {
 			System.out.println("Bad hostname");
@@ -33,6 +39,10 @@ public class WindowShareClient {
 	public void send(String data) {
 		out.write(data + "\n");
 		out.flush();
+	}
+	
+	public void addListener(InputListener l) {
+		listeners.add(l);
 	}
 	
 	private class ServerThread implements Runnable {
@@ -59,7 +69,9 @@ public class WindowShareClient {
 		}
 		
 		public void handleMessage(String message) {
-			// TODO: handle message sent from server
+			for (InputListener l : listeners) {
+				l.process(message);
+			}
 		}
 	}
 }

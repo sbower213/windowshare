@@ -2,6 +2,8 @@ package InputReader;
 
 import com.google.gson.Gson;
 
+import Networking.WindowShareNode;
+
 public class MouseEvent {
 	static WindowShareNode network;
 	

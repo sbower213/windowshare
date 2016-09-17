@@ -6,16 +6,21 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class WindowShareServer implements Runnable {
+import InputListener.InputListener;
+
+public class WindowShareServer implements Runnable, WindowShareNode {
 	public static final int PORT = 5000;
 	
 	private ServerSocket sock;
 	private HashMap<Socket, ClientThread> clientMap;
 	private Vector<Socket> clients;
+	private Set<InputListener> listeners;
 	
 	public WindowShareServer() {
 		// Create ServerSocket and start listening for client connections.
@@ -28,6 +33,7 @@ public class WindowShareServer implements Runnable {
 		System.out.println("Server running at " + sock.getInetAddress() + ":" + sock.getLocalPort());
 		clients = new Vector<Socket>();
 		clientMap = new HashMap<Socket, ClientThread>();
+		listeners = new HashSet<InputListener>();
 	}
 	
 	@Override
@@ -58,6 +64,14 @@ public class WindowShareServer implements Runnable {
 			throw new IllegalArgumentException("Client doesn't exist.");
 		}
 		thread.addToQueue(message + "\n");
+	}
+	
+	public void send(String message) {
+		send(message, this.clients.get(0));
+	}
+	
+	public void addListener(InputListener l) {
+		listeners.add(l);
 	}
 	
 	private class ClientThread implements Runnable {
@@ -117,7 +131,9 @@ public class WindowShareServer implements Runnable {
 		}
 		
 		public void handleMessage(String message) {
-			// TODO: handle message sent from client
+			for (InputListener l : listeners) {
+				l.process(message);
+			}
 		}
 	}
 }
