@@ -58,6 +58,6 @@ public class MouseMotionReader implements NativeMouseInputListener {
 				e.printStackTrace();
 			}		// Roughly 1/30 seconds
 			waiting = false;
-		});
+		}).start();;
 	}
 }

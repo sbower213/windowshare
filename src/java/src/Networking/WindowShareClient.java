@@ -11,7 +11,7 @@ import java.util.Set;
 import InputListener.InputListener;
 
 public class WindowShareClient implements WindowShareNode {
-	public static final String SERVER_IP = "127.0.0.1";
+	public static final String SERVER_IP = "18.22.8.46";
 	
 	private Socket sock;
 	private BufferedReader in;
