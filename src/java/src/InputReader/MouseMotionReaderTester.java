@@ -32,6 +32,7 @@ public class MouseMotionReaderTester {
 		
 		WindowShareClient wsc = new WindowShareClient();
 		MouseEvent.network = wsc;
+		wsc.addListener(example);
 
         // Add the appropriate listeners.
         GlobalScreen.addNativeMouseListener(example);
