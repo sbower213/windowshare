@@ -8,9 +8,15 @@ public class MouseEvent {
 	static WindowShareNode network;
 	
 	String type;
-	Gson gson = new Gson();
+	transient Gson gson;
+	
+	public MouseEvent() {
+	}
 	
 	void send() {
+		if (gson == null) {
+			gson = new Gson();
+		}
 		System.out.println(this.toString());
 		System.out.println(gson.toJson(this));
 		network.send(gson.toJson(this));
