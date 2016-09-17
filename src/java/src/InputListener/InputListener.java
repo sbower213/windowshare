@@ -25,7 +25,7 @@ public class InputListener implements NetworkListener {
 	
 	Queue<MouseEvent> eventQueue;
 	
-	public InputListener(WindowShareServer server) throws AWTException {
+	public InputListener() throws AWTException {
 		robot = new Robot();
 		gson = new Gson();
 		remoteControl = false;
