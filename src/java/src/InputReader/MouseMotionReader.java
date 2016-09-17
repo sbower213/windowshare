@@ -105,11 +105,13 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	public void process(String message) {
 		Gson gson = new Gson();
 		MouseEvent e = gson.fromJson(message, MouseEvent.class);
-		
+
+		System.out.println("processing an event: " + e);
 		if (e.type.equals("leftHostScreen")) {
+			System.out.println("mouse control is back");
 			MouseExitScreenEvent mlse = gson.fromJson(message, MouseExitScreenEvent.class);
 			mouseOffscreen = false;
-			robot.mouseMove(0, (int) (mlse.height * height));
+			robot.mouseMove(10, (int) (mlse.height * height));
 		}
 	}
 }
