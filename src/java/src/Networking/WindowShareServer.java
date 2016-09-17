@@ -1,3 +1,4 @@
+package Networking;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,17 +57,19 @@ public class WindowShareServer implements Runnable {
 		if (thread == null) {
 			throw new IllegalArgumentException("Client doesn't exist.");
 		}
-		thread.addToQueue(message);
+		thread.addToQueue(message + "\n");
 	}
 	
 	private class ClientThread implements Runnable {
 		static final int PAUSE_AMOUNT = 200; // ms
+		Socket sock;
 		BufferedReader in;
 		PrintWriter out;
 		
 		Queue<String> sendQueue;
 		
 		public ClientThread(Socket sock) {
+			this.sock = sock;
 			try {
 				this.in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 				this.out = new PrintWriter(sock.getOutputStream(), true);
@@ -78,29 +81,34 @@ public class WindowShareServer implements Runnable {
 		
 		@Override
 		public void run() {
-			while (true) {
-				/* Read message if available */
-				try {
+			try {
+				while (true) {
+					/* Read message if available */
 					String message = "";
 					if ((message = in.readLine()) != null) {
 						handleMessage(message);
 						System.out.println("[SERVER] " + message);
 					}
-				} catch (IOException e) {
-					System.out.println("Can't read from client");
-				}
-				/* Writer message if available */
-				if (!sendQueue.isEmpty()) {
-					out.write(sendQueue.remove());
-					out.flush();
-				}
-				
-				/* pause a little to avoid over processing */
-				try {
+					/* Write message if available */
+					if (!sendQueue.isEmpty()) {
+						out.write(sendQueue.remove());
+						out.flush();
+					}
+					/* pause a little to avoid over processing */
 					Thread.sleep(ClientThread.PAUSE_AMOUNT);
-				} catch (InterruptedException e) {
-					System.out.println("Could not sleep");
 				}
+			} catch (IOException e) {
+				System.out.println("[SERVER] Can't read from client. Disconnecting.");
+				
+			} catch (InterruptedException e) {
+				System.out.println("Could not sleep");
+			}
+			try {
+				in.close();
+				out.close();
+				sock.close();
+			} catch(IOException e) {
+				System.out.println("You are hopeless");
 			}
 		}
 		

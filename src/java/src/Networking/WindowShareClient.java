@@ -1,3 +1,4 @@
+package Networking;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,7 +31,7 @@ public class WindowShareClient {
 	}
 	
 	public void send(String data) {
-		out.write(data);
+		out.write(data + "\n");
 		out.flush();
 	}
 	
@@ -39,23 +40,21 @@ public class WindowShareClient {
 		
 		@Override
 		public void run() {
-			while (true) {
-				/* Read message if available */
-				try {
-					String message = "";
-					if ((message = in.readLine()) != null) {
-						handleMessage(message);
-						System.out.println("[Client] " + message);
-					}
-				} catch (IOException e) {
-					System.out.println("Can't read from client");
-				}
-				/* pause a little to avoid over processing */
-				try {
+			try {
+				while (true) {
+					/* Read message if available */
+						String message = "";
+						if ((message = in.readLine()) != null) {
+							handleMessage(message);
+							System.out.println("[Client] " + message);
+						}
+					/* pause a little to avoid over processing */
 					Thread.sleep(ServerThread.PAUSE_AMOUNT);
-				} catch (InterruptedException e) {
-					System.out.println("Could not sleep");
 				}
+			} catch (IOException e) {
+				System.out.println("Can't read from server. Disconnecting");
+			} catch (InterruptedException e) {
+				System.out.println("Could not sleep");
 			}
 		}
 		
