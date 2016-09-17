@@ -75,7 +75,7 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 	}
 	
 	private class ClientThread implements Runnable {
-		static final int PAUSE_AMOUNT = 200; // ms
+		static final int PAUSE_AMOUNT = 10; // ms
 		Socket sock;
 		BufferedReader in;
 		PrintWriter out;
@@ -101,7 +101,7 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 					String message = "";
 					if ((message = in.readLine()) != null) {
 						handleMessage(message);
-						System.out.println("[SERVER] " + message);
+						//System.out.println("[SERVER] " + message);
 					}
 					/* Write message if available */
 					if (!sendQueue.isEmpty()) {
@@ -131,6 +131,7 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 		}
 		
 		public void handleMessage(String message) {
+			//System.out.println(listeners);
 			for (InputListener l : listeners) {
 				l.process(message);
 			}
