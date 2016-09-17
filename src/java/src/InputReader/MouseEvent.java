@@ -13,6 +13,10 @@ public class MouseEvent {
 	public MouseEvent() {
 	}
 	
+	public MouseEvent(String t) {
+		type = t;
+	}
+	
 	void send() {
 		if (gson == null) {
 			gson = new Gson();

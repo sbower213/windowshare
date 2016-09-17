@@ -6,6 +6,7 @@ import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.event.InputEvent;
 
 public class MouseMotionReader implements NativeMouseInputListener {
 	int width, height;
@@ -27,10 +28,18 @@ public class MouseMotionReader implements NativeMouseInputListener {
 
 	@Override
 	public void nativeMousePressed(NativeMouseEvent e) {
+		int b = e.getButton();
+		int buttons = b == NativeMouseEvent.BUTTON1 ? InputEvent.BUTTON1_DOWN_MASK :
+			(b == NativeMouseEvent.BUTTON2 ? InputEvent.BUTTON2_DOWN_MASK : InputEvent.BUTTON3_DOWN_MASK);
+		(new MouseUpDownEvent(true, buttons)).send();
 	}
 
 	@Override
 	public void nativeMouseReleased(NativeMouseEvent e) {
+		int b = e.getButton();
+		int buttons = b == NativeMouseEvent.BUTTON1 ? InputEvent.BUTTON1_DOWN_MASK :
+			(b == NativeMouseEvent.BUTTON2 ? InputEvent.BUTTON2_DOWN_MASK : InputEvent.BUTTON3_DOWN_MASK);
+		(new MouseUpDownEvent(false, buttons)).send();
 	}
 
 	@Override
@@ -58,6 +67,6 @@ public class MouseMotionReader implements NativeMouseInputListener {
 				e.printStackTrace();
 			}		// Roughly 1/30 seconds
 			waiting = false;
-		}).start();;
+		}).start();
 	}
 }
