@@ -83,7 +83,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	public void leaveScreen(int h) {
 		mouseOffscreen = true;
 		
-		(new MouseLeftScreenEvent((1.0 * h) / height, true)).send();
+		(new MouseExitScreenEvent((1.0 * h) / height, true)).send();
 	}
 	
 	public void waitAndSend(int dx, int dy) {
@@ -107,7 +107,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		MouseEvent e = gson.fromJson(message, MouseEvent.class);
 		
 		if (e.type.equals("leftHostScreen")) {
-			MouseLeftScreenEvent mlse = gson.fromJson(message, MouseLeftScreenEvent.class);
+			MouseExitScreenEvent mlse = gson.fromJson(message, MouseExitScreenEvent.class);
 			mouseOffscreen = false;
 			robot.mouseMove(0, (int) (mlse.height * height));
 		}

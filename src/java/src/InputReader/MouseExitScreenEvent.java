@@ -1,14 +1,14 @@
 package InputReader;
 
-public class MouseLeftScreenEvent extends MouseEvent {
+public class MouseExitScreenEvent extends MouseEvent {
 	public double height;
 	
-	public MouseLeftScreenEvent() {
+	public MouseExitScreenEvent() {
 		type = "leftOriginalScreen";
 		height = 0;
 	}
 	
-	public MouseLeftScreenEvent(double _h, boolean original) {
+	public MouseExitScreenEvent(double _h, boolean original) {
 		type = original ? "leftOriginalScreen" : "leftHostScreen";
 		height = _h;
 	}

@@ -17,7 +17,7 @@ public class MouseEvent {
 		type = t;
 	}
 	
-	void send() {
+	public void send() {
 		if (gson == null) {
 			gson = new Gson();
 		}

@@ -26,7 +26,7 @@ public class MouseMotionReaderTester {
 		} catch (AWTException ex) {
             System.err.println("There was a problem setting up the robot.");
             System.err.println(ex.getMessage());
-
+            
             System.exit(1);
 		}
 		
