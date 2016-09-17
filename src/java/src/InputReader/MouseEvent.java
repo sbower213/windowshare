@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import Networking.WindowShareNode;
 
 public class MouseEvent {
-	static WindowShareNode network;
+	public static WindowShareNode network;
 	
 	public String type;
 	transient Gson gson;
