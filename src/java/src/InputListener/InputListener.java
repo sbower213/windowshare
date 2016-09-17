@@ -2,6 +2,7 @@ package InputListener;
 
 import InputReader.MouseEvent;
 import InputReader.MouseMoveEvent;
+import InputReader.MouseUpDownEvent;
 import Networking.NetworkListener;
 
 import java.awt.AWTException;
@@ -37,6 +38,12 @@ public class InputListener implements NetworkListener {
 				eventQueue.notify();
 			}
 			//System.out.println("" + (mouseLoc.x + mme.dx) + "," + (mouseLoc.y + mme.dy));
+		} else if (e.type.equals("click") || e.type.equals("release")) {
+			MouseUpDownEvent mude = gson.fromJson(message, MouseUpDownEvent.class);
+			eventQueue.add(mude);
+			synchronized(eventQueue) {
+				eventQueue.notify();
+			}
 		}
 	}
 	
@@ -74,7 +81,14 @@ public class InputListener implements NetworkListener {
 						robot.mouseMove(newX, newY);
 						curTime = System.currentTimeMillis();
 					} while (curTime - startTime < MouseEventHandler.DELTA);
-				} else {
+				} else if (event instanceof MouseUpDownEvent) {
+					if (event.type.equals("click")) {
+						robot.mousePress(((MouseUpDownEvent) event).buttons);
+					} else if (event.type.equals("release")) {
+						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
+					}
+				}
+				else {
 					// do other things with other events
 				}
 			}
