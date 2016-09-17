@@ -1,3 +1,4 @@
+package InputReader;
 import java.awt.AWTException;
 
 import org.jnativehook.GlobalScreen;

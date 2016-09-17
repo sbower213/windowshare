@@ -1,3 +1,4 @@
+package InputReader;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 
@@ -9,11 +10,13 @@ import java.awt.Toolkit;
 public class MouseMotionReader implements NativeMouseInputListener {
 	int width, height;
 	Robot robot;
+	boolean waiting;
 	
 	public MouseMotionReader() throws AWTException {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		width = (int)screenSize.getWidth();
 		height = (int)screenSize.getHeight();
+		waiting = false;
 		robot = new Robot();
 	}
 	
@@ -36,12 +39,25 @@ public class MouseMotionReader implements NativeMouseInputListener {
 
 	@Override
 	public void nativeMouseMoved(NativeMouseEvent e) {
-		int xDiff = e.getX() - width/2;
-		int yDiff = e.getY() - height/2;
-		System.out.println("mouse moved by (" + xDiff + ", " + yDiff + ")");
+		int dx = e.getX() - width/2;
+		int dy = e.getY() - height/2;
 		
-		if (xDiff * xDiff + yDiff * yDiff > 100) {
-			robot.mouseMove(width/2, height/2);
+		if (!waiting) {
+			waitAndSend(dx, dy);
 		}
+	}
+	
+	public void waitAndSend(int dx, int dy) {
+		new Thread(() -> {
+			waiting = true;
+			try {
+				Thread.sleep(33);
+				(new MouseMoveEvent(dx, dy)).send();
+				robot.mouseMove(width/2, height/2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}		// Roughly 1/30 seconds
+			waiting = false;
+		});
 	}
 }
