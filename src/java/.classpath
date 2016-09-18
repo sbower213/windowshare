@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jnativehook-2.0.3.jar"/>
 	<classpathentry kind="lib" path="gson-2.7.jar"/>
+	<classpathentry kind="lib" path="jna-4.2.2.jar"/>
+	<classpathentry kind="lib" path="jna-platform-4.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
