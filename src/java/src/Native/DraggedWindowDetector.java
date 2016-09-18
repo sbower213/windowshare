@@ -30,7 +30,7 @@ public class DraggedWindowDetector {
 	public static String executableNameForActiveWindow() {
 		String path = WinDraggedWindowDetector.activeWindowProcessName();
 		
-		return path.substring(path.lastIndexOf("\\"), path.lastIndexOf("."));
+		return path.substring(path.lastIndexOf("\\" + 1), path.lastIndexOf("."));
 	}
 	
 	public static String filepathForActiveWindow() {
@@ -38,11 +38,14 @@ public class DraggedWindowDetector {
 			String[] filepaths = SpecialFolderRecent.recentFilenames();
 			String title = WinDraggedWindowDetector.activeWindowTitle();
 			for (String f : filepaths) {
+				System.out.println(f);
 				int end = f.lastIndexOf(".");
 				if (end < 0) {
 					end = f.length();
 				}
-				if (title.contains(f.substring(f.lastIndexOf("\\"), end))) {
+				System.out.println(f.substring(f.lastIndexOf("\\" + 1), end));
+				if (title.contains(f.substring(f.lastIndexOf("\\" + 1), end))) {
+					System.out.println("found " + f);
 					return f;
 				}
 			}
@@ -80,7 +83,7 @@ public class DraggedWindowDetector {
 		}
 		
 		for (int i = 0; i < paths.length; i++) {
-			if (paths[i].substring(Math.max(paths[i].lastIndexOf("/"), paths[i].lastIndexOf("\\")),
+			if (paths[i].substring(Math.max(paths[i].lastIndexOf("/"), paths[i].lastIndexOf("\\")) + 1,
 					paths[i].lastIndexOf(".")).equalsIgnoreCase(exeName)) {
 				return paths[i];
 			}
