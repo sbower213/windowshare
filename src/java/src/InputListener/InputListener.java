@@ -233,6 +233,9 @@ public class InputListener {
 										System.out.println("File is here.");
 										try {
 											DraggedWindowDetector.openFile(lastExecName, dataFile.getAbsolutePath());
+											dataFile = null;
+											lastPathName = null;
+											lastExecName = null;
 										} catch (IOException e) {
 											e.printStackTrace();
 										}
@@ -252,6 +255,9 @@ public class InputListener {
 										ChromeDataRequester.openUrls(chromeUrls);
 										chromeUrls = null;
 									}
+									
+									lastPathName = null;
+									lastExecName = null;
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
