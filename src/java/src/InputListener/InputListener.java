@@ -4,6 +4,9 @@ import InputReader.MouseEvent;
 import InputReader.MouseMoveEvent;
 import InputReader.MouseUpDownEvent;
 import InputReader.MouseExitScreenEvent;
+import InputReader.WindowDraggedEvent;
+import InputReader.WindowAckEvent;
+import Native.DraggedWindowDetector;
 import Networking.NetworkListener;
 import Networking.WindowShareNode;
 import ScreenDrawer.Draw;
@@ -32,11 +35,13 @@ public class InputListener {
 	int mouseX, mouseY;
 	int origMouseX, origMouseY;
 	Window cursorWindow;
+	Draw draw;
 	boolean mouseDown;
 	WindowShareNode<String> stringTransfer;
 	WindowShareNode<File> fileTransfer;
 	WindowShareNode<BufferedImage> imageTransfer;
 	BufferedImage cursor;
+	File dataFile;
 	
 	Queue<MouseEvent> eventQueue;
 	
@@ -48,7 +53,8 @@ public class InputListener {
 		mouseDown = false;
 		try {
 			cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
-			cursorWindow = Draw.defineWindow(cursor, null);
+			draw = new Draw();
+			cursorWindow = draw.defineWindow(cursor, null);
 			//cursorWindow.setSize(cursor.getWidth(), cursor.getHeight());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -84,6 +90,8 @@ public class InputListener {
 				e = gson.fromJson(message, MouseUpDownEvent.class);
 			} else if (e.type.equals("leftOriginalScreen")) {
 				e = gson.fromJson(message, MouseExitScreenEvent.class);
+			} else if (e.type.equals("windowDragged")) {
+				e = gson.fromJson(message, WindowDraggedEvent.class);
 			}
 			eventQueue.add(e);
 			synchronized(eventQueue) {
@@ -96,20 +104,22 @@ public class InputListener {
 	public class FileListener implements NetworkListener<File> {
 		@Override
 		public void process(File message) {
-			// TODO Auto-generated method stub
-
+			dataFile = message;
 		}
 	}
 	
 	public class BufferedImageListener implements NetworkListener<BufferedImage> {
 		@Override
 		public void process(BufferedImage message) {
-			Draw.defineWindow(cursor, message);
+			draw.defineWindow(cursor, message);
 		}
 	}
 	
 	private class MouseEventHandler implements Runnable {
 		static final int DELTA = 33; //ms
+		
+		String lastExecName = null;
+		String lastPathName = null;
 		
 		@Override
 		public void run() {
@@ -194,6 +204,13 @@ public class InputListener {
 						robot.mouseMove(origMouseX, origMouseY);
 						robot.waitForIdle();
 						mouseDown = false;
+						if (lastExecName != null) {
+							try {
+								DraggedWindowDetector.openFile(lastExecName, dataFile.getAbsolutePath());
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
 					}
 				} else if (event instanceof MouseExitScreenEvent) {
 					MouseExitScreenEvent mlose = (MouseExitScreenEvent)event;
@@ -209,8 +226,13 @@ public class InputListener {
 					System.out.println("init: " + mouseX + ", " + mouseY);
 					cursorWindow.setVisible(true);
 					cursorWindow.setLocation(mouseX, mouseY);
-				}
-				else {
+				} else if (event instanceof WindowDraggedEvent) {
+					WindowDraggedEvent wde = (WindowDraggedEvent)event;
+					lastExecName = wde.executableName;
+					lastPathName = wde.filepath;
+					WindowAckEvent e = new WindowAckEvent(lastPathName);
+					e.send();
+				} else {
 					// do other things with other events
 				}
 			}

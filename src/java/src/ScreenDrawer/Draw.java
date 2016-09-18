@@ -23,7 +23,11 @@ import Networking.WindowShareServer;
 
 public class Draw implements NetworkListener<BufferedImage> {
 	
-	private static DragWindow w = new DragWindow();
+	private DragWindow w;
+	
+	public Draw() {
+		w = new DragWindow();
+	}
 	
 	public static void main(String[] args) throws InterruptedException, AWTException {
 		WindowShareServer<BufferedImage> server = new WindowShareServer<BufferedImage>
@@ -47,16 +51,16 @@ public class Draw implements NetworkListener<BufferedImage> {
 		clearWindow(w);
 	}
 	
-	public static class DragWindow extends Window {
+	public class DragWindow extends Window {
 		private static final long serialVersionUID = 1L;
 		
 		BufferedImage cursor;
 		BufferedImage bg;
 
-		DragWindow(){
+		public DragWindow() {
 			super(null);
 			setAlwaysOnTop(true);
-			setBounds(w.getGraphicsConfiguration().getBounds());
+			setBounds(getGraphicsConfiguration().getBounds());
 			setBackground(new Color(0, true));
 		}
 		
@@ -78,7 +82,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 		}
 	}
 	
-	public static Window defineWindow(BufferedImage image, BufferedImage bg){
+	public Window defineWindow(BufferedImage image, BufferedImage bg){
 		w.cursor = image;
 		w.bg = bg;
 		w.repaint();

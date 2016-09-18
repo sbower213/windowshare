@@ -34,7 +34,6 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		mouseOffscreen = false;
 	}
 	
-	
 	@Override
 	public void nativeMouseClicked(NativeMouseEvent e) {
 	}
