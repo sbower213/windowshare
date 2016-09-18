@@ -41,6 +41,7 @@ public class InputListener {
 	WindowShareNode<File> fileTransfer;
 	WindowShareNode<BufferedImage> imageTransfer;
 	BufferedImage cursor;
+	BufferedImage spinner;
 	File dataFile;
 	boolean justJumped;
 	
@@ -54,6 +55,7 @@ public class InputListener {
 		mouseDown = false;
 		try {
 			cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
+			spinner = ImageIO.read(new File(getClass().getResource("spinner.gif").getPath()));
 			draw = new Draw();
 			cursorWindow = draw.defineWindow(cursor, null);
 			//cursorWindow.setSize(cursor.getWidth(), cursor.getHeight());
@@ -194,7 +196,7 @@ public class InputListener {
 						robot.mousePress(((MouseUpDownEvent) event).buttons);
 						mouseDown = true;
 					} else if (event.type.equals("release")) {
-						draw.defineWindow(cursor, null);
+						draw.defineWindow(spinner, null);
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
 						try {
 							synchronized(robot) {
@@ -221,6 +223,7 @@ public class InputListener {
 												e.printStackTrace();
 											}
 										}
+										draw.defineWindow(cursor, null);
 										System.out.println("File is here.");
 										try {
 											DraggedWindowDetector.openFile(lastExecName, dataFile.getAbsolutePath());
