@@ -2,10 +2,13 @@ package ScreenDrawer;
 
 import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.HeadlessException;
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,7 +23,7 @@ import Networking.WindowShareServer;
 
 public class Draw implements NetworkListener<BufferedImage> {
 	
-	private static BufferedImage image;
+	private static DragWindow w = new DragWindow();
 	
 	public static void main(String[] args) throws InterruptedException, AWTException {
 		WindowShareServer<BufferedImage> server = new WindowShareServer<BufferedImage>
@@ -34,7 +37,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 
 	@Override
 	public void process(BufferedImage message) {
-		Window w = defineWindow(message);
+		Window w = defineWindow(message, null);
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
@@ -44,24 +47,41 @@ public class Draw implements NetworkListener<BufferedImage> {
 		clearWindow(w);
 	}
 	
-	public static Window defineWindow(BufferedImage image){
-		Window w=new Window(null)
-		{
-		  @Override
-		  public void paint(Graphics g)
-		  {
-		    g.drawImage(image, 0, 0, null);
-		  }
-		  @Override
-		  public void update(Graphics g)
-		  {
-			  //paint(g);
-		  }
-		};
-		w.setAlwaysOnTop(true);
-		w.setBounds(w.getGraphicsConfiguration().getBounds());
-		w.setBackground(new Color(0, true));
-		//w.setVisible(true);
+	public static class DragWindow extends Window {
+		private static final long serialVersionUID = 1L;
+		
+		BufferedImage cursor;
+		BufferedImage bg;
+
+		DragWindow(){
+			super(null);
+			setAlwaysOnTop(true);
+			setBounds(w.getGraphicsConfiguration().getBounds());
+			setBackground(new Color(0, true));
+		}
+		
+		public void paint(Graphics g) {
+			 if (bg != null) {
+				 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				 int width = (int)screenSize.getWidth();
+				 this.setSize(width / 4, (int) ((bg.getHeight() * 1.0) / bg.getWidth() * width / 4));
+				 g.drawImage(bg, 0, 0, getWidth(), getHeight(), null);
+			 }
+			 if (cursor != null) {
+				 g.drawImage(cursor, 0, 0, null);
+			 }
+		}
+		@Override
+		public void update(Graphics g) {
+			super.update(g);
+			//paint(g);
+		}
+	}
+	
+	public static Window defineWindow(BufferedImage image, BufferedImage bg){
+		w.cursor = image;
+		w.bg = bg;
+		w.repaint();
 		return w;
 	}
 	

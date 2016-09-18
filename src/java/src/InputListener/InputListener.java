@@ -6,7 +6,6 @@ import InputReader.MouseUpDownEvent;
 import InputReader.MouseExitScreenEvent;
 import Networking.NetworkListener;
 import Networking.WindowShareNode;
-import Networking.WindowShareServer;
 import ScreenDrawer.Draw;
 
 import java.awt.AWTException;
@@ -26,7 +25,7 @@ import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
 
-public class InputListener implements NetworkListener<String> {
+public class InputListener {
 	Robot robot;
 	Gson gson;
 	boolean remoteControl;
@@ -34,8 +33,10 @@ public class InputListener implements NetworkListener<String> {
 	int origMouseX, origMouseY;
 	Window cursorWindow;
 	boolean mouseDown;
+	WindowShareNode<String> stringTransfer;
 	WindowShareNode<File> fileTransfer;
 	WindowShareNode<BufferedImage> imageTransfer;
+	BufferedImage cursor;
 	
 	Queue<MouseEvent> eventQueue;
 	
@@ -45,10 +46,9 @@ public class InputListener implements NetworkListener<String> {
 		remoteControl = false;
 		eventQueue = new ConcurrentLinkedQueue<MouseEvent>();
 		mouseDown = false;
-		BufferedImage cursor;
 		try {
 			cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
-			cursorWindow = Draw.defineWindow(cursor);
+			cursorWindow = Draw.defineWindow(cursor, null);
 			//cursorWindow.setSize(cursor.getWidth(), cursor.getHeight());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -56,20 +56,55 @@ public class InputListener implements NetworkListener<String> {
 		}
 		new Thread(new MouseEventHandler()).start();
 	}
+	
+	public void setStringTransfer(WindowShareNode<String> n) {
+		stringTransfer = n;
+		stringTransfer.addListener(new StringListener());
+	}
+	
+	public void setFileTransfer(WindowShareNode<File> n) {
+		fileTransfer = n;
+		fileTransfer.addListener(new FileListener());
+	}
+	
+	public void setImageTransfer(WindowShareNode<BufferedImage> n) {
+		imageTransfer = n;
+		imageTransfer.addListener(new BufferedImageListener());
+	}
 
-	public void process(String message) {
-		MouseEvent e = gson.fromJson(message, MouseEvent.class);
-		//System.out.println(e);
-		if (e.type.equals("move")) {
-			e = gson.fromJson(message, MouseMoveEvent.class);
-		} else if (e.type.equals("click") || e.type.equals("release")) {
-			e = gson.fromJson(message, MouseUpDownEvent.class);
-		} else if (e.type.equals("leftOriginalScreen")) {
-			e = gson.fromJson(message, MouseExitScreenEvent.class);
+	public class StringListener implements NetworkListener<String> {
+
+		@Override
+		public void process(String message) {
+			MouseEvent e = gson.fromJson(message, MouseEvent.class);
+			//System.out.println(e);
+			if (e.type.equals("move")) {
+				e = gson.fromJson(message, MouseMoveEvent.class);
+			} else if (e.type.equals("click") || e.type.equals("release")) {
+				e = gson.fromJson(message, MouseUpDownEvent.class);
+			} else if (e.type.equals("leftOriginalScreen")) {
+				e = gson.fromJson(message, MouseExitScreenEvent.class);
+			}
+			eventQueue.add(e);
+			synchronized(eventQueue) {
+				eventQueue.notify();
+			}
 		}
-		eventQueue.add(e);
-		synchronized(eventQueue) {
-			eventQueue.notify();
+
+	}
+	
+	public class FileListener implements NetworkListener<File> {
+		@Override
+		public void process(File message) {
+			// TODO Auto-generated method stub
+
+		}
+	}
+	
+	public class BufferedImageListener implements NetworkListener<BufferedImage> {
+		@Override
+		public void process(BufferedImage message) {
+			Draw.defineWindow(cursor, message);
 		}
 	}
 	
@@ -112,7 +147,7 @@ public class InputListener implements NetworkListener<String> {
 						int height = (int)screenSize.getHeight();
 						newX = Math.min(Math.max(0, mouseX + dx), width);
 						newY = Math.min(Math.max(0, mouseY + dy), height);
-						System.out.println(newX + ", " + newY);
+						//System.out.println(newX + ", " + newY);
 						if (newX >= width || newX <= 0) {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false, newX <= 0);
 							e.send();
@@ -137,7 +172,9 @@ public class InputListener implements NetworkListener<String> {
 						origMouseY = start.y;
 						robot.mouseMove(mouseX, mouseY);
 						try {
-							robot.wait(100);
+							synchronized(robot) {
+								robot.wait(100);
+							}
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -147,7 +184,9 @@ public class InputListener implements NetworkListener<String> {
 					} else if (event.type.equals("release")) {
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
 						try {
-							robot.wait(100);
+							synchronized(robot) {
+								robot.wait(100);
+							}
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

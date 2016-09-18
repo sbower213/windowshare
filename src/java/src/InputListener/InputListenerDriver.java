@@ -24,12 +24,12 @@ public class InputListenerDriver {
 				FileTransferThread.class);
 		WindowShareServer<BufferedImage> imageServer = new WindowShareServer<BufferedImage>(
 				WindowShareServer.IMAGE_PORT, FileTransferThread.class);
-		
-		listener.fileTransfer = fileServer;
-		listener.imageTransfer = imageServer;
+
+		listener.setStringTransfer(server);
+		listener.setFileTransfer(fileServer);
+		listener.setImageTransfer(imageServer);
 				
 		MouseEvent.network = server;
-		server.addListener(listener);
 		Thread t = new Thread(server);
 		t.start();
 		Thread t2 = new Thread(fileServer);
