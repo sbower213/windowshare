@@ -185,6 +185,7 @@ public class InputListener {
 						origMouseX = start.x;
 						origMouseY = start.y;
 						robot.mouseMove(mouseX, mouseY);
+						cursorWindow.setVisible(false);
 						try {
 							synchronized(robot) {
 								robot.wait(100);
@@ -198,6 +199,7 @@ public class InputListener {
 					} else if (event.type.equals("release")) {
 						draw.defineWindow(spinner, null);
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
+						cursorWindow.setVisible(true);
 						try {
 							synchronized(robot) {
 								robot.wait(100);
