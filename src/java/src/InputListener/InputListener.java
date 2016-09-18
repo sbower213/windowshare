@@ -43,6 +43,7 @@ public class InputListener implements NetworkListener<String> {
 		try {
 			cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
 			cursorWindow = Draw.defineWindow(cursor);
+			cursorWindow.setSize(cursor.getWidth(), cursor.getHeight());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
