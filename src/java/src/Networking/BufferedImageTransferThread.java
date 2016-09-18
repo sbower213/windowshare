@@ -40,7 +40,7 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	private static byte[] readExactly(InputStream input, int size) throws IOException
 	{
 	    byte[] data = new byte[size];
-	    byte[] chunk = new byte[1024];
+	    byte[] chunk = new byte[Math.min(1024, size)];
 	    int bytesRead = 0;
 	    int off = 0;
 	    while (off < size && (bytesRead = input.read(chunk)) >= 0)

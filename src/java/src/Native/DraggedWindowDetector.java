@@ -80,8 +80,14 @@ public class DraggedWindowDetector {
 		}
 		
 		for (int i = 0; i < paths.length; i++) {
+			System.out.println(paths[i]);
+			int end = paths[i].lastIndexOf(".");
+			if (end < 0) {
+				end = paths[i].length();
+			}
 			if (paths[i].substring(Math.max(paths[i].lastIndexOf("/"), paths[i].lastIndexOf("\\")),
-					paths[i].lastIndexOf(".")).equalsIgnoreCase(exeName)) {
+					end).equalsIgnoreCase(exeName)) {
+				System.out.println("Choosing path: " + paths[i]);
 				return paths[i];
 			}
 		}
