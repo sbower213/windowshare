@@ -4,6 +4,7 @@ import org.jnativehook.mouse.NativeMouseInputListener;
 
 import com.google.gson.Gson;
 
+import Native.DraggedWindowDetector;
 import Networking.NetworkListener;
 
 import java.awt.AWTException;
@@ -88,6 +89,10 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		mouseOffscreen = true;
 		
 		(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
+		
+		if (DraggedWindowDetector.activeWindowIsDragged()) {
+			
+		}
 	}
 	
 	public void waitAndSend(int dx, int dy) {
