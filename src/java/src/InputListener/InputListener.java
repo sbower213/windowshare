@@ -5,7 +5,6 @@ import InputReader.MouseMoveEvent;
 import InputReader.MouseUpDownEvent;
 import InputReader.MouseExitScreenEvent;
 import Networking.NetworkListener;
-import Networking.WindowShareServer;
 
 import java.awt.AWTException;
 import java.awt.Dimension;
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.gson.Gson;
 
-public class InputListener implements NetworkListener {
+public class InputListener implements NetworkListener<String> {
 	Robot robot;
 	Gson gson;
 	boolean remoteControl;

@@ -1,5 +1,5 @@
 package Networking;
 
-public interface NetworkListener {
-	public void process(String message);
+public interface NetworkListener<T> {
+	public void process(T message);
 }

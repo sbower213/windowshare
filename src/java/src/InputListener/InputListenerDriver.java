@@ -16,7 +16,7 @@ public class InputListenerDriver {
 			e.printStackTrace();
 		}
 		
-		WindowShareServer server = new WindowShareServer();
+		WindowShareServer<String> server = new WindowShareServer<String>();
 		MouseEvent.network = server;
 		server.addListener(listener);
 		Thread t = new Thread(server);

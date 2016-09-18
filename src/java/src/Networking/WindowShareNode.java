@@ -1,8 +1,6 @@
 package Networking;
 
-import InputListener.InputListener;
-
-public interface WindowShareNode {
-	void send(String message);
-	void addListener(NetworkListener l);
+public interface WindowShareNode<T> {
+	void send(T message);
+	void addListener(NetworkListener<T> l);
 }

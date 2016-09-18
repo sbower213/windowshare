@@ -1,75 +1,50 @@
 package Networking;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WindowShareClient implements WindowShareNode {
-	public static final String SERVER_IP = "18.22.8.142";
+public class WindowShareClient<T> implements WindowShareNode<T> {
+	//public static final String SERVER_IP = "18.22.8.142";
+	public static final String SERVER_IP = "127.0.0.1";
 	
 	private Socket sock;
-	private BufferedReader in;
-	private PrintWriter out;
-	private Set<NetworkListener> listeners;
+	private Set<NetworkListener<T>> listeners;
+	private TransferThread<T> transferThread;
 	
-	public WindowShareClient(String serverip) {
+	public WindowShareClient(String serverip, int port, Class<?> threadClass) {
 		try {
-			sock = new Socket(serverip, WindowShareServer.PORT);
-			in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			out = new PrintWriter(sock.getOutputStream(), true);
-			listeners = new HashSet<NetworkListener>();
-			new Thread(new ServerThread()).start();
+			sock = new Socket(serverip, port);
 		} catch (UnknownHostException e) {
-			System.out.println("Bad hostname");
+			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("Could not connect to server.");
+			e.printStackTrace();
 		}
+		listeners = new HashSet<NetworkListener<T>>();
+		try {
+			this.transferThread = (TransferThread<T>) threadClass.newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		transferThread.addSocket(sock);
+		transferThread.addListeners(listeners);
+		new Thread(transferThread).start();
 	}
 	
 	public WindowShareClient() {
-		this(WindowShareClient.SERVER_IP);
+		this(WindowShareClient.SERVER_IP, WindowShareServer.PORT, StringTransferThread.class);
 	}
 	
-	public void send(String data) {
-		out.write(data + "\n");
-		out.flush();
+	public void send(T message) {
+		transferThread.addToQueue(message);
 	}
 	
-	public void addListener(NetworkListener l) {
+	public void addListener(NetworkListener<T> l) {
 		listeners.add(l);
-	}
-	
-	private class ServerThread implements Runnable {
-		static final int PAUSE_AMOUNT = 200; // ms
-		
-		@Override
-		public void run() {
-			try {
-				while (true) {
-					/* Read message if available */
-						String message = "";
-						if ((message = in.readLine()) != null) {
-							handleMessage(message);
-							System.out.println("[Client] " + message);
-						}
-					/* pause a little to avoid over processing */
-					Thread.sleep(ServerThread.PAUSE_AMOUNT);
-				}
-			} catch (IOException e) {
-				System.out.println("Can't read from server. Disconnecting");
-			} catch (InterruptedException e) {
-				System.out.println("Could not sleep");
-			}
-		}
-		
-		public void handleMessage(String message) {
-			for (NetworkListener l : listeners) {
-				l.process(message);
-			}
-		}
 	}
 }

@@ -12,7 +12,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 
-public class MouseMotionReader implements NativeMouseInputListener, NetworkListener {
+public class MouseMotionReader implements NativeMouseInputListener, NetworkListener<String> {
 	int width, height;
 	Robot robot;
 	boolean waiting;
