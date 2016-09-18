@@ -1,0 +1,117 @@
+#!/usr/bin/env python
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# A simple native messaging host.
+
+import struct
+import sys
+import threading
+import Queue
+import ctypes  # An included library with Python install.
+
+# On Windows, the default I/O mode is O_TEXT. Set this to O_BINARY
+# to avoid unwanted modifications of the input/output streams.
+if sys.platform == "win32":
+  import os, msvcrt
+  msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+  msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+
+# Helper function that sends a message to the webapp.
+def send_message(message):
+   # Write message size.
+  sys.stdout.write(struct.pack('I', len(message)))
+  # Write the message itself.
+  sys.stdout.write(message)
+  sys.stdout.flush()
+  #target = open("log.txt", 'a')
+  #target.write(message + "\n")
+  #target.close()
+
+# Thread that reads messages from the webapp.
+def read_thread_func(queue):
+  message_number = 0
+  while 1:
+    # Read the message length (first 4 bytes).
+    text_length_bytes = sys.stdin.read(4)
+
+    if len(text_length_bytes) == 0:
+      if queue:
+        queue.put(None)
+      sys.exit(0)
+
+    # Unpack message length as 4 byte integer.
+    text_length = struct.unpack('i', text_length_bytes)[0]
+
+    # Read the text (JSON object) of the message.
+    text = sys.stdin.read(text_length).decode('utf-8')
+
+    if queue:
+      queue.put(text)
+    else:
+      # In headless mode just send an echo message back.
+      send_message('{"echo": %s}' % text)
+
+#did i mention how much i h8 whitespace delimited languages
+if 1==1:
+  class NativeMessagingWindow():
+
+    def after(self, time):
+      self.timer.start()
+      self.processMessages()
+
+    def __init__(self, queue):
+      self.queue = queue
+      self.timer = threading.Timer(5, self.processMessages)
+      self.timer.start()
+      #self.after(15)
+      #self.timer = threading.Timer()
+
+    def processMessages(self):
+      while not self.queue.empty():
+        message = self.queue.get_nowait()
+        if message == None: # put none in the queue to kill the program
+          self.quit()
+          return
+        send_message(message)
+        self.log("Received??? %s" % message)
+
+      #self.after(15)
+
+    def onSend(self):
+      text = '{"text": "' + "exampleValue" + '"}'
+      self.log('Sending !!! %s' % text)
+      try:
+        send_message(text)
+      except IOError:
+        sys.exit(1)
+
+    def log(self, message):
+      target = open("log.txt", 'a')
+      target.write(message + "\n")
+      target.close()
+      #idk it was easier than removing instances of log
+
+
+def Main():
+
+  queue = Queue.Queue()
+
+  #clear the log
+  open("log.txt", "w").close();
+
+  nm = NativeMessagingWindow(queue)
+
+  thread = threading.Thread(target=read_thread_func, args=(queue,))
+  thread.daemon = True
+  thread.start()
+
+  while True:
+      1==1
+
+  sys.exit(0)
+
+
+if __name__ == '__main__':
+  Main()

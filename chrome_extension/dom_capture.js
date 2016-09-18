@@ -10,15 +10,19 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
 
         return true;
     } else if (msg.text === 'update_dom') {
-      alert("made it fam");
+        alert("made it fam");
         document.addEventListener("DOMContentLoaded", function(event) {
           alert("?");
           document = msg.dom;
         });
         console.log(msg.dom);
         sendResponse("yes good");
+        //return true;
     }
 });
+
+
+
 /*
 var port = chrome.runtime.connect({name: "content_port"});
 
