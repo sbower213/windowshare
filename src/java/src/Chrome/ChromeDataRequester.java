@@ -28,6 +28,8 @@ public class ChromeDataRequester {
 		}
 		s.close();
 		
+		results.delete();
+		
 		return st.split("\n");
 	}
 	

@@ -237,6 +237,7 @@ public class InputListener {
 								}).start();
 							} else {
 								System.out.println("File path is null");
+								draw.defineWindow(cursor, null);
 								try {
 									DraggedWindowDetector.openFile(lastExecName, null);
 								} catch (IOException e) {
