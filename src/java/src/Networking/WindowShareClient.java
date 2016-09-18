@@ -5,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WindowShareClient<T> implements WindowShareNode<T>, Runnable {
+public class WindowShareClient<T> implements WindowShareNode<T> {
 	public static final String SERVER_IP = "18.22.8.46";
 	
 	private Socket sock;

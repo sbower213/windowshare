@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-public class WindowShareServer<T> implements Runnable, WindowShareNode<T> {
+public class WindowShareServer<T> implements WindowShareNode<T> {
 	public static final int PORT = 5000;
 	public static final int FILE_PORT = PORT + 1;
 	public static final int IMAGE_PORT = PORT + 2;

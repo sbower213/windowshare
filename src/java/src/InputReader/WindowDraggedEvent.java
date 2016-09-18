@@ -11,6 +11,7 @@ public class WindowDraggedEvent extends MouseEvent {
 	}
 	
 	public WindowDraggedEvent(String exeName, String fp) {
+		type = "windowDragged";
 		executableName = exeName;
 		filepath = fp;
 	}

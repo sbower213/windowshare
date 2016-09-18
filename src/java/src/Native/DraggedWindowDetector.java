@@ -38,7 +38,11 @@ public class DraggedWindowDetector {
 			String[] filepaths = SpecialFolderRecent.recentFilenames();
 			String title = WinDraggedWindowDetector.activeWindowTitle();
 			for (String f : filepaths) {
-				if (title.contains(f.substring(f.lastIndexOf("\\"), f.lastIndexOf(".")))) {
+				int end = f.lastIndexOf(".");
+				if (end < 0) {
+					end = f.length();
+				}
+				if (title.contains(f.substring(f.lastIndexOf("\\"), end))) {
 					return f;
 				}
 			}

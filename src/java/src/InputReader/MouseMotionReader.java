@@ -21,8 +21,8 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	Robot robot;
 	boolean waiting;
 	boolean mouseOffscreen;
-	WindowShareNode<File> fileTransfer;
-	WindowShareNode<BufferedImage> imageTransfer;
+	public WindowShareNode<File> fileTransfer;
+	public WindowShareNode<BufferedImage> imageTransfer;
 	String lastFilepath;
 	
 	public MouseMotionReader() throws AWTException {
@@ -61,6 +61,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 
 	@Override
 	public void nativeMouseDragged(NativeMouseEvent e) {
+		System.out.println(DraggedWindowDetector.activeWindowIsDragged());
 		if (mouseOffscreen) {
 			int dx = e.getX() - width/2;
 			int dy = e.getY() - height/2;
@@ -97,6 +98,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
 		
 		if (DraggedWindowDetector.activeWindowIsDragged()) {
+			System.out.println("ACTIVE WINDOW IS DRAGGED");
 			String executableName = DraggedWindowDetector.executableNameForActiveWindow();
 			String filepath = DraggedWindowDetector.filepathForActiveWindow();
 			WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
@@ -137,7 +139,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			robot.mouseMove(mlse.fromRight == true ? 10 : width - 10, (int) (mlse.height * height));
 		} else if (e.type.equals("windowAck")) {
 			WindowAckEvent wae = gson.fromJson(message, WindowAckEvent.class);
-			if (wae.filepath == lastFilepath) {
+			if (lastFilepath != null && wae.filepath == lastFilepath) {
 				File f = new File(lastFilepath);
 				fileTransfer.send(f);
 			}
