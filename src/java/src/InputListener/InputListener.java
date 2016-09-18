@@ -205,37 +205,35 @@ public class InputListener {
 						robot.waitForIdle();
 						mouseDown = false;
 						if (lastExecName != null) {
-							if (dataFile == null) {
-								if (lastPathName != null) {
-									new Thread(new Runnable() {
-	
-										@Override
-										public void run() {
-											System.out.println("Thread waiting for file");
-											while (dataFile == null) {
-												try {
-													Thread.sleep(200);
-												} catch (InterruptedException e) {
-													e.printStackTrace();
-												}
-											}
-											System.out.println("File is here.");
+							if (lastPathName != null) {
+								new Thread(new Runnable() {
+
+									@Override
+									public void run() {
+										System.out.println("Thread waiting for file");
+										while (dataFile == null) {
 											try {
-												DraggedWindowDetector.openFile(lastExecName, dataFile.getAbsolutePath());
-											} catch (IOException e) {
+												Thread.sleep(200);
+											} catch (InterruptedException e) {
 												e.printStackTrace();
 											}
 										}
-										
-									}).start();
-								} else {
-									System.out.println("File path is null");
-									try {
-										DraggedWindowDetector.openFile(lastExecName, null);
-									} catch (IOException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+										System.out.println("File is here.");
+										try {
+											DraggedWindowDetector.openFile(lastExecName, dataFile.getAbsolutePath());
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
 									}
+
+								}).start();
+							} else {
+								System.out.println("File path is null");
+								try {
+									DraggedWindowDetector.openFile(lastExecName, null);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 							}
 							

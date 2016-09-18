@@ -114,6 +114,7 @@ public class DraggedWindowDetector {
 	}
 	
 	public static void openFile(String exeName, String filePath) throws IOException {
+		System.out.println("opening " + filePath + ", exe: " + exeName);
 		if (filePath == null) {
 			String closestExe = closestExecutableTo(exeName);
 			if (closestExe == null) {
@@ -121,18 +122,23 @@ public class DraggedWindowDetector {
 			} else {
 				if (OsCheck.getOperatingSystemType() == OSType.Windows) {
 					Runtime.getRuntime().exec(closestExe);
+					System.out.println("windows");
 				} else if (OsCheck.getOperatingSystemType() == OSType.MacOS) {
+					System.out.println("mac");
 					Desktop.getDesktop().open(new File(closestExe));
 				}
 			}
 		} else {
 			String closestExe = closestExecutableTo(exeName);
 			if (closestExe == null) {
+				System.out.println("no exe");
 				Desktop.getDesktop().open(new File(filePath));
 			} else {
 				if (OsCheck.getOperatingSystemType() == OSType.Windows) {
+					System.out.println("windows");
 					Runtime.getRuntime().exec(closestExe + " \"" + filePath + "\"");
 				} else {
+					System.out.println("other os");
 					Runtime.getRuntime().exec("open -a " + closestExe + " \"" + filePath + "\"");
 				}
 			}
