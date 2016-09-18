@@ -139,6 +139,7 @@ public class InputListener implements NetworkListener<String> {
 					int height = (int)screenSize.getHeight();
 					mouseX = width - 10;
 					mouseY = (int) (height * mlose.height);
+					openCursorWindow();
 				}
 				else {
 					// do other things with other events
