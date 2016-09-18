@@ -1,0 +1,9 @@
+{
+
+"name":"nativemessaging.nativemessaging",
+"description":"Window Sharing Made Easy",
+"path":"C:\\Users\\Steven\\Documents\\workspace\\native-messaging-example-host.bat",
+"type":"stdio",
+"allowed_origins":["chrome-extension://bmbccgagogihoioeodjkaehfaooihjnj/"]
+
+}

@@ -6,6 +6,7 @@ import java.io.File;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
+import Networking.BufferedImageTransferThread;
 import Networking.FileTransferThread;
 import Networking.WindowShareClient;
 import Networking.WindowShareServer;
@@ -38,7 +39,7 @@ public class MouseMotionReaderTester {
 		WindowShareClient<File> fileClient = new WindowShareClient<File>(WindowShareClient.SERVER_IP, WindowShareServer.FILE_PORT,
 				FileTransferThread.class);
 		WindowShareClient<BufferedImage> imageClient = new WindowShareClient<BufferedImage>(
-				WindowShareClient.SERVER_IP, WindowShareServer.IMAGE_PORT, FileTransferThread.class);
+				WindowShareClient.SERVER_IP, WindowShareServer.IMAGE_PORT, BufferedImageTransferThread.class);
 		
 		example.fileTransfer = fileClient;
 		example.imageTransfer = imageClient;

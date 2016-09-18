@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import InputReader.MouseEvent;
+import Networking.BufferedImageTransferThread;
 import Networking.FileTransferThread;
 import Networking.WindowShareServer;
 
@@ -23,7 +24,7 @@ public class InputListenerDriver {
 		WindowShareServer<File> fileServer = new WindowShareServer<File>(WindowShareServer.FILE_PORT,
 				FileTransferThread.class);
 		WindowShareServer<BufferedImage> imageServer = new WindowShareServer<BufferedImage>(
-				WindowShareServer.IMAGE_PORT, FileTransferThread.class);
+				WindowShareServer.IMAGE_PORT, BufferedImageTransferThread.class);
 
 		listener.setStringTransfer(server);
 		listener.setFileTransfer(fileServer);
