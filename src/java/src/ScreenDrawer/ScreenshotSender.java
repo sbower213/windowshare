@@ -21,7 +21,12 @@ public class ScreenshotSender {
 		WindowShareClient<BufferedImage> c = new WindowShareClient<BufferedImage>(WindowShareClient.SERVER_IP,
 				WindowShareServer.FILE_PORT, BufferedImageTransferThread.class);
 		
+		Thread t = new Thread(c);
+		t.start();
+		
 		c.send(i);
+		
+		t.join();
 	}
 
 }

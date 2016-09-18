@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WindowShareClient<T> implements WindowShareNode<T> {
-	public static final String SERVER_IP = "18.22.8.142";
+public class WindowShareClient<T> implements WindowShareNode<T>, Runnable {
+	public static final String SERVER_IP = "18.22.8.46";
 	
 	private Socket sock;
 	private Set<NetworkListener<T>> listeners;
@@ -32,7 +32,6 @@ public class WindowShareClient<T> implements WindowShareNode<T> {
 		}
 		transferThread.addSocket(sock);
 		transferThread.addListeners(listeners);
-		new Thread(transferThread).start();
 	}
 	
 	public WindowShareClient() {
@@ -45,5 +44,10 @@ public class WindowShareClient<T> implements WindowShareNode<T> {
 	
 	public void addListener(NetworkListener<T> l) {
 		listeners.add(l);
+	}
+
+	@Override
+	public void run() {
+		transferThread.run();
 	}
 }
