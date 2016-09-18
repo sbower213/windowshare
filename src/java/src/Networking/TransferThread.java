@@ -70,6 +70,7 @@ public abstract class TransferThread<T> implements Runnable {
 				while (!shouldDie) {
 					T message = read();
 					if (message == null) {
+						System.out.println("Message is null");
 						throw new IOException();
 					}
 					handleMessage(message);
@@ -78,8 +79,6 @@ public abstract class TransferThread<T> implements Runnable {
 				System.out.println("Connection Broken. Disconnecting.");
 			}
 			try {
-				in.close();
-				out.close();
 				sock.close();
 			} catch(IOException e) {
 				System.out.println("You are hopeless");
@@ -105,8 +104,6 @@ public abstract class TransferThread<T> implements Runnable {
 				System.out.println("Could not sleep.");
 			}
 			try {
-				in.close();
-				out.close();
 				sock.close();
 			} catch(IOException e) {
 				System.out.println("You are hopeless");
