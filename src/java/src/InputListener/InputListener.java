@@ -31,6 +31,7 @@ public class InputListener implements NetworkListener<String> {
 	int mouseX, mouseY;
 	int origMouseX, origMouseY;
 	Window cursorWindow;
+	boolean mouseDown;
 	
 	Queue<MouseEvent> eventQueue;
 	
@@ -39,6 +40,7 @@ public class InputListener implements NetworkListener<String> {
 		gson = new Gson();
 		remoteControl = false;
 		eventQueue = new ConcurrentLinkedQueue<MouseEvent>();
+		mouseDown = false;
 		BufferedImage cursor;
 		try {
 			cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
@@ -115,6 +117,9 @@ public class InputListener implements NetworkListener<String> {
 							break;
 						}
 						cursorWindow.setLocation(newX, newY);
+						if (mouseDown) {
+							robot.mouseMove(newX, newY);
+						}
 						curTime = System.currentTimeMillis();
 					} while (curTime - startTime < MouseEventHandler.DELTA);
 					mouseX = newX;
@@ -126,9 +131,13 @@ public class InputListener implements NetworkListener<String> {
 						origMouseY = start.y;
 						robot.mouseMove(mouseX, mouseY);
 						robot.mousePress(((MouseUpDownEvent) event).buttons);
+						robot.waitForIdle();
+						mouseDown = true;
 					} else if (event.type.equals("release")) {
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
 						robot.mouseMove(origMouseX, origMouseY);
+						robot.waitForIdle();
+						mouseDown = false;
 					}
 				} else if (event instanceof MouseExitScreenEvent) {
 					MouseExitScreenEvent mlose = (MouseExitScreenEvent)event;
