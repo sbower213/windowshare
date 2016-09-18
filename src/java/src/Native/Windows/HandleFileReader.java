@@ -5,22 +5,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef.HWND;
+import com.sun.jna.ptr.IntByReference;
+
 public class HandleFileReader {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		//String command =  System.getProperty("user.dir")+"\\handle.exe |findstr /i";
-		String command =  System.getProperty("user.dir")+"\\handle.exe";
-		System.out.println(java.io.File.listRoots());
-		String root = "";
-		for(File thing : java.io.File.listRoots()) {
-			System.out.println(thing.toString());
-			if(command.contains(thing.toString())) {
-				root = thing.toString();
-				break;
-			}
-		}
-		System.out.println(root);
-		//command += " " + root;
+		HWND hwnd = User32.INSTANCE.GetForegroundWindow();  
+		IntByReference pId=new IntByReference();  
+		User32.INSTANCE.GetWindowThreadProcessId(hwnd, pId);  
+		int processId=pId.getValue();  
+		
+		String command =  System.getProperty("user.dir")+"\\handle.exe -p " + processId;
+		
 		System.out.println(command);
 		Process p = Runtime.getRuntime().exec(command);
 		BufferedReader bf = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -29,11 +27,6 @@ public class HandleFileReader {
             System.out.println(line);
         }
 		p.waitFor();
-		
-		
-	       System.out.println(
-	              System.getProperty("user.dir")+"\\handle.exe");
-	       
 	  }
 
 }
