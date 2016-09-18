@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import Native.OsCheck.OSType;
+import Native.OSX.OSXDraggedWindowDetector;
 import Native.Windows.SpecialFolderRecent;
 import Native.Windows.WinDraggedWindowDetector;
 import Native.Windows.WindowsShortcut;
@@ -17,7 +18,7 @@ public class DraggedWindowDetector {
 		if (OsCheck.getOperatingSystemType() == OSType.Windows) {
 			return WinDraggedWindowDetector.activeWindowIsDragged();
 		} else {
-			throw new UnsupportedOperationException();
+			return OSXDraggedWindowDetector.activeWindowIsDragged();
 		}
 	}
 	
@@ -25,18 +26,22 @@ public class DraggedWindowDetector {
 		if (OsCheck.getOperatingSystemType() == OSType.Windows) {
 			return WinDraggedWindowDetector.activeWindowBounds();
 		} else {
-			throw new UnsupportedOperationException();
+			return OSXDraggedWindowDetector.activeWindowBounds();
 		}
 	}
 	
 	public static String executableNameForActiveWindow() {
-		String path = WinDraggedWindowDetector.activeWindowProcessName();
-		
-		int end = path.lastIndexOf(".");
-		if (end < 0) {
-			end = path.length();
+		if (OsCheck.getOperatingSystemType() == OSType.Windows) {
+			String path = WinDraggedWindowDetector.activeWindowProcessName();
+
+			int end = path.lastIndexOf(".");
+			if (end < 0) {
+				end = path.length();
+			}
+			return path.substring(path.lastIndexOf("\\") + 1, end);
+		} else {
+			return OSXDraggedWindowDetector.activeWindowProcessName();
 		}
-		return path.substring(path.lastIndexOf("\\") + 1, end);
 	}
 	
 	public static String filepathForActiveWindow() throws IOException, ParseException {
@@ -66,7 +71,7 @@ public class DraggedWindowDetector {
 			}
 			return null;
 		} else {
-			throw new UnsupportedOperationException();
+			return OSXDraggedWindowDetector.activeWindowFilePath();
 		}
 	}
 	
