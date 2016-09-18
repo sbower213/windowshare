@@ -2,6 +2,7 @@ package InputListener;
 
 import java.awt.AWTException;
 
+import InputReader.MouseEvent;
 import Networking.WindowShareServer;
 
 public class InputListenerDriver {
@@ -16,6 +17,7 @@ public class InputListenerDriver {
 		}
 		
 		WindowShareServer server = new WindowShareServer();
+		MouseEvent.network = server;
 		server.addListener(listener);
 		Thread t = new Thread(server);
 		t.start();

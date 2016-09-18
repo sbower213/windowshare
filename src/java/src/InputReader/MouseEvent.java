@@ -5,12 +5,22 @@ import com.google.gson.Gson;
 import Networking.WindowShareNode;
 
 public class MouseEvent {
-	static WindowShareNode network;
+	public static WindowShareNode network;
 	
-	String type;
-	Gson gson = new Gson();
+	public String type;
+	transient Gson gson;
 	
-	void send() {
+	public MouseEvent() {
+	}
+	
+	public MouseEvent(String t) {
+		type = t;
+	}
+	
+	public void send() {
+		if (gson == null) {
+			gson = new Gson();
+		}
 		System.out.println(this.toString());
 		System.out.println(gson.toJson(this));
 		network.send(gson.toJson(this));

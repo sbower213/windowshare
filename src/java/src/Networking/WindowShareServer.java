@@ -20,7 +20,7 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 	private ServerSocket sock;
 	private HashMap<Socket, ClientThread> clientMap;
 	private Vector<Socket> clients;
-	private Set<InputListener> listeners;
+	private Set<NetworkListener> listeners;
 	
 	public WindowShareServer() {
 		// Create ServerSocket and start listening for client connections.
@@ -33,7 +33,7 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 		System.out.println("Server running at " + sock.getInetAddress() + ":" + sock.getLocalPort());
 		clients = new Vector<Socket>();
 		clientMap = new HashMap<Socket, ClientThread>();
-		listeners = new HashSet<InputListener>();
+		listeners = new HashSet<NetworkListener>();
 	}
 	
 	@Override
@@ -70,12 +70,12 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 		send(message, this.clients.get(0));
 	}
 	
-	public void addListener(InputListener l) {
+	public void addListener(NetworkListener l) {
 		listeners.add(l);
 	}
 	
 	private class ClientThread implements Runnable {
-		static final int PAUSE_AMOUNT = 200; // ms
+		static final int PAUSE_AMOUNT = 10; // ms
 		Socket sock;
 		BufferedReader in;
 		PrintWriter out;
@@ -101,7 +101,7 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 					String message = "";
 					if ((message = in.readLine()) != null) {
 						handleMessage(message);
-						System.out.println("[SERVER] " + message);
+						//System.out.println("[SERVER] " + message);
 					}
 					/* Write message if available */
 					if (!sendQueue.isEmpty()) {
@@ -131,7 +131,8 @@ public class WindowShareServer implements Runnable, WindowShareNode {
 		}
 		
 		public void handleMessage(String message) {
-			for (InputListener l : listeners) {
+			//System.out.println(listeners);
+			for (NetworkListener l : listeners) {
 				l.process(message);
 			}
 		}
