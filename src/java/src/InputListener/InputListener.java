@@ -5,6 +5,7 @@ import InputReader.MouseMoveEvent;
 import InputReader.MouseUpDownEvent;
 import InputReader.MouseExitScreenEvent;
 import Networking.NetworkListener;
+import ScreenDrawer.Draw;
 
 import java.awt.AWTException;
 import java.awt.Dimension;
@@ -12,8 +13,14 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
 
@@ -21,6 +28,9 @@ public class InputListener implements NetworkListener<String> {
 	Robot robot;
 	Gson gson;
 	boolean remoteControl;
+	int mouseX, mouseY;
+	int origMouseX, origMouseY;
+	Window cursorWindow;
 	
 	Queue<MouseEvent> eventQueue;
 	
@@ -45,6 +55,17 @@ public class InputListener implements NetworkListener<String> {
 		eventQueue.add(e);
 		synchronized(eventQueue) {
 			eventQueue.notify();
+		}
+	}
+	
+	public void openCursorWindow() {
+		try {
+			BufferedImage cursor = ImageIO.read(new File("cursor_win_hand.png"));
+			cursorWindow = Draw.defineWindow(cursor);
+			cursorWindow.setLocation(mouseX, mouseY);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -73,7 +94,6 @@ public class InputListener implements NetworkListener<String> {
 					}
 					// interpolate the current position with the new position.
 					MouseMoveEvent mme = (MouseMoveEvent)event;
-					Point start = MouseInfo.getPointerInfo().getLocation();
 					long startTime = System.currentTimeMillis();
 					long curTime = startTime;
 					do {
@@ -81,8 +101,8 @@ public class InputListener implements NetworkListener<String> {
 						float frac = (deltaTime * 1.0f) / MouseEventHandler.DELTA;
 						int dx = (int) (mme.dx * frac);
 						int dy = (int) (mme.dy * frac);
-						int newX = start.x + dx;
-						int newY = start.y + dy;
+						int newX = mouseX + dx;
+						int newY = mouseY + dy;
 						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 						int width = (int)screenSize.getWidth();
 						int height = (int)screenSize.getHeight();
@@ -90,17 +110,26 @@ public class InputListener implements NetworkListener<String> {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false);
 							e.send();
 							remoteControl = false;
-							robot.mouseMove(width - 10, newY);
+							Draw.clearWindow(cursorWindow);
+							mouseX = width - 10;
+							mouseY =  newY;
 							break;
 						}
-						robot.mouseMove(newX, newY);
+						mouseX = newX;
+						mouseX = newY;
+						cursorWindow.setLocation(mouseX, mouseY);
 						curTime = System.currentTimeMillis();
 					} while (curTime - startTime < MouseEventHandler.DELTA);
 				} else if (event instanceof MouseUpDownEvent) {
 					if (event.type.equals("click")) {
+						Point start = MouseInfo.getPointerInfo().getLocation();
+						origMouseX = start.x;
+						origMouseY = start.y;
+						robot.mouseMove(mouseX, mouseY);
 						robot.mousePress(((MouseUpDownEvent) event).buttons);
 					} else if (event.type.equals("release")) {
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
+						robot.mouseMove(origMouseX, origMouseY);
 					}
 				} else if (event instanceof MouseExitScreenEvent) {
 					MouseExitScreenEvent mlose = (MouseExitScreenEvent)event;
@@ -108,7 +137,8 @@ public class InputListener implements NetworkListener<String> {
 					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 					int width = (int)screenSize.getWidth();
 					int height = (int)screenSize.getHeight();
-					robot.mouseMove(width - 10, (int) (height * mlose.height));
+					mouseX = width - 10;
+					mouseY = (int) (height * mlose.height);
 				}
 				else {
 					// do other things with other events

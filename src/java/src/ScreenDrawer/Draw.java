@@ -44,7 +44,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 		clearWindow(w);
 	}
 	
-	static Window defineWindow(BufferedImage image){
+	public static Window defineWindow(BufferedImage image){
 		Window w=new Window(null)
 		{
 		  @Override
@@ -66,16 +66,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 		return w;
 	}
 	
-	static void drawImage(String filePath, Graphics g) {
-		try {                
-	          image = ImageIO.read(new File("C:/Users/Siddy/Pictures/siddy.jpg"));
-	          g.drawImage(image, 0, 0, null);
-	       } catch (IOException ex) {
-	            // handle exception...
-	       }
-	}
-	
-	static void clearWindow(Window w) {
+	public static void clearWindow(Window w) {
 		w.setVisible(false);
 		w.dispose();
 	}
