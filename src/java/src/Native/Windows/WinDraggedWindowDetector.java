@@ -2,10 +2,13 @@ package Native.Windows;
 
 import java.awt.Rectangle;
 
+import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.RECT;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinUser.GUITHREADINFO;
+import com.sun.jna.ptr.IntByReference;
 
 public class WinDraggedWindowDetector {
 
@@ -47,5 +50,18 @@ public class WinDraggedWindowDetector {
 		User32.INSTANCE.GetWindowText(wnd, titleArr, titleLength);
 		
 		return new String(titleArr);
+	}
+	
+	public static String activeWindowProcessName() {
+		HWND hwnd = User32.INSTANCE.GetForegroundWindow();  
+		IntByReference pId=new IntByReference();  
+		User32.INSTANCE.GetWindowThreadProcessId(hwnd, pId);  
+		int processId=pId.getValue();
+		HANDLE handle = Kernel32.INSTANCE.OpenProcess(Kernel32.PROCESS_QUERY_LIMITED_INFORMATION, false, processId);
+		
+		char[] buffer = new char[2048];
+		PsApi.INSTANCE.GetProcessImageFileName(handle, buffer, buffer.length);
+		
+		return new String(buffer);
 	}
 }
