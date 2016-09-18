@@ -5,6 +5,8 @@ import InputReader.MouseMoveEvent;
 import InputReader.MouseUpDownEvent;
 import InputReader.MouseExitScreenEvent;
 import Networking.NetworkListener;
+import Networking.WindowShareNode;
+import Networking.WindowShareServer;
 import ScreenDrawer.Draw;
 
 import java.awt.AWTException;
@@ -32,6 +34,8 @@ public class InputListener implements NetworkListener<String> {
 	int origMouseX, origMouseY;
 	Window cursorWindow;
 	boolean mouseDown;
+	WindowShareNode<File> fileTransfer;
+	WindowShareNode<BufferedImage> imageTransfer;
 	
 	Queue<MouseEvent> eventQueue;
 	

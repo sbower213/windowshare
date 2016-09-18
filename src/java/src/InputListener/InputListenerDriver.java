@@ -1,8 +1,11 @@
 package InputListener;
 
 import java.awt.AWTException;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 import InputReader.MouseEvent;
+import Networking.FileTransferThread;
 import Networking.WindowShareServer;
 
 public class InputListenerDriver {
@@ -17,12 +20,26 @@ public class InputListenerDriver {
 		}
 		
 		WindowShareServer<String> server = new WindowShareServer<String>();
+		WindowShareServer<File> fileServer = new WindowShareServer<File>(WindowShareServer.FILE_PORT,
+				FileTransferThread.class);
+		WindowShareServer<BufferedImage> imageServer = new WindowShareServer<BufferedImage>(
+				WindowShareServer.IMAGE_PORT, FileTransferThread.class);
+		
+		listener.fileTransfer = fileServer;
+		listener.imageTransfer = imageServer;
+				
 		MouseEvent.network = server;
 		server.addListener(listener);
 		Thread t = new Thread(server);
 		t.start();
+		Thread t2 = new Thread(fileServer);
+		t2.start();
+		Thread t3 = new Thread(imageServer);
+		t3.start();
 		try {
 			t.join();
+			t2.join();
+			t3.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

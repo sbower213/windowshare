@@ -6,18 +6,23 @@ import com.google.gson.Gson;
 
 import Native.DraggedWindowDetector;
 import Networking.NetworkListener;
+import Networking.WindowShareNode;
 
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class MouseMotionReader implements NativeMouseInputListener, NetworkListener<String> {
 	int width, height;
 	Robot robot;
 	boolean waiting;
 	boolean mouseOffscreen;
+	WindowShareNode<File> fileTransfer;
+	WindowShareNode<BufferedImage> imageTransfer;
 	
 	public MouseMotionReader() throws AWTException {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -91,7 +96,8 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
 		
 		if (DraggedWindowDetector.activeWindowIsDragged()) {
-			
+			BufferedImage i = robot.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
+			imageTransfer.send(i);
 		}
 	}
 	

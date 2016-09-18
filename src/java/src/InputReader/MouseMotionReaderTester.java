@@ -1,10 +1,14 @@
 package InputReader;
 import java.awt.AWTException;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 
+import Networking.FileTransferThread;
 import Networking.WindowShareClient;
+import Networking.WindowShareServer;
 
 public class MouseMotionReaderTester {
 
@@ -31,10 +35,22 @@ public class MouseMotionReaderTester {
 		}
 		
 		WindowShareClient<String> wsc = new WindowShareClient<String>();
+		WindowShareClient<File> fileClient = new WindowShareClient<File>(WindowShareClient.SERVER_IP, WindowShareServer.FILE_PORT,
+				FileTransferThread.class);
+		WindowShareClient<BufferedImage> imageClient = new WindowShareClient<BufferedImage>(
+				WindowShareClient.SERVER_IP, WindowShareServer.IMAGE_PORT, FileTransferThread.class);
+		
+		example.fileTransfer = fileClient;
+		example.imageTransfer = imageClient;
+		
 		MouseEvent.network = wsc;
 		wsc.addListener(example);
 		Thread t = new Thread(wsc);
 		t.start();
+		Thread t2 = new Thread(fileClient);
+		t2.start();
+		Thread t3 = new Thread(imageClient);
+		t3.start();
         // Add the appropriate listeners.
         GlobalScreen.addNativeMouseListener(example);
         GlobalScreen.addNativeMouseMotionListener(example);
