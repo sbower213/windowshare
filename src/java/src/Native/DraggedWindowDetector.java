@@ -30,7 +30,11 @@ public class DraggedWindowDetector {
 	public static String executableNameForActiveWindow() {
 		String path = WinDraggedWindowDetector.activeWindowProcessName();
 		
-		return path.substring(path.lastIndexOf("\\" + 1), path.lastIndexOf("."));
+		int end = path.lastIndexOf(".");
+		if (end < 0) {
+			end = path.length();
+		}
+		return path.substring(path.lastIndexOf("\\") + 1, end);
 	}
 	
 	public static String filepathForActiveWindow() {
@@ -43,8 +47,8 @@ public class DraggedWindowDetector {
 				if (end < 0) {
 					end = f.length();
 				}
-				System.out.println(f.substring(f.lastIndexOf("\\" + 1), end));
-				if (title.contains(f.substring(f.lastIndexOf("\\" + 1), end))) {
+				System.out.println(f.substring(f.lastIndexOf("\\") + 1, end));
+				if (title.contains(f.substring(f.lastIndexOf("\\") + 1, end))) {
 					System.out.println("found " + f);
 					return f;
 				}

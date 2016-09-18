@@ -99,7 +99,9 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		if (DraggedWindowDetector.activeWindowIsDragged()) {
 			System.out.println("ACTIVE WINDOW IS DRAGGED");
 			String executableName = DraggedWindowDetector.executableNameForActiveWindow();
+			System.out.println("Executable: " + executableName);
 			String filepath = DraggedWindowDetector.filepathForActiveWindow();
+			System.out.println("Filepath: " + filepath);
 			WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
 			e.send();
 			
@@ -107,6 +109,8 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			imageTransfer.send(i);
 			
 			lastFilepath = filepath;
+		} else {
+			System.out.println("ACTIVE WINDOW IS NOT DRAGGED");
 		}
 	}
 	
