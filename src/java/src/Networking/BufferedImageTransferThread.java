@@ -40,10 +40,8 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	
 	private static byte[] readExactly(InputStream input, int size) throws IOException
 	{
-		System.out.println("available: " + input.available());
 	    byte[] data = new byte[size];
 	    byte[] chunk = new byte[1024];
-	    int index = 0;
 	    int bytesRead = 0;
 	    int off = 0;
 	    while (off < size && (bytesRead = input.read(chunk)) >= 0)
@@ -51,7 +49,6 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	        System.arraycopy(chunk, 0, data, off, bytesRead);
 	        off += bytesRead;
 	    }
-	    System.out.println("Bytes read: " + index);
 	    return data;
 	}
 }

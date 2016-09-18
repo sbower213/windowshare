@@ -14,17 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class FileTransferThread extends TransferThread<File>{
-
-	@Override
-	public void addSocket(Socket sock) {
-		super.addSocket(sock);
-		try {
-			this.in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			this.out = new PrintWriter(sock.getOutputStream(), true);
-		} catch (IOException e) {
-			System.out.println("Trouble establishing streams to client.");
-		}
-	}
 	
 	@Override
 	public File read() throws IOException {
@@ -34,6 +23,7 @@ public class FileTransferThread extends TransferThread<File>{
 		System.out.println("Size: " + size);
 		byte[] imageBytes = readExactly(in, (int)size);
 		File dir = new File(System.getProperty("java.io.tmpdir"));
+		System.out.println("Saving file to dir " + dir);
 		String filename = "";
 		for (int i = 0; i < 10; i++) {
 			filename += imageBytes[i];
@@ -53,6 +43,7 @@ public class FileTransferThread extends TransferThread<File>{
         InputStream in = new FileInputStream(message);
         long length = message.length();
         byte[] lenBytes = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(length).array();
+        System.out.println("Size" + length);
         OutputStream out = sock.getOutputStream();
         out.write(lenBytes);
         int count;
@@ -60,14 +51,13 @@ public class FileTransferThread extends TransferThread<File>{
             out.write(bytes, 0, count);
         }
         in.close();
+        out.close();
 	}
 
 	private static byte[] readExactly(InputStream input, int size) throws IOException
 	{
-		System.out.println("available: " + input.available());
 	    byte[] data = new byte[size];
 	    byte[] chunk = new byte[1024];
-	    int index = 0;
 	    int bytesRead = 0;
 	    int off = 0;
 	    while (off < size && (bytesRead = input.read(chunk)) >= 0)
@@ -75,7 +65,6 @@ public class FileTransferThread extends TransferThread<File>{
 	        System.arraycopy(chunk, 0, data, off, bytesRead);
 	        off += bytesRead;
 	    }
-	    System.out.println("Bytes read: " + index);
 	    return data;
 	}
 }
