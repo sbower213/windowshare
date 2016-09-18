@@ -18,7 +18,8 @@ public class DraggedWindowDetector {
 		if (OsCheck.getOperatingSystemType() == OSType.Windows) {
 			return WinDraggedWindowDetector.activeWindowIsDragged();
 		} else {
-			return OSXDraggedWindowDetector.activeWindowIsDragged();
+			return true;
+			//return OSXDraggedWindowDetector.activeWindowIsDragged();
 		}
 	}
 	
@@ -26,7 +27,8 @@ public class DraggedWindowDetector {
 		if (OsCheck.getOperatingSystemType() == OSType.Windows) {
 			return WinDraggedWindowDetector.activeWindowBounds();
 		} else {
-			return OSXDraggedWindowDetector.activeWindowBounds();
+			return null;
+			//return OSXDraggedWindowDetector.activeWindowBounds();
 		}
 	}
 	
@@ -40,7 +42,8 @@ public class DraggedWindowDetector {
 			}
 			return path.substring(path.lastIndexOf("\\") + 1, end);
 		} else {
-			return OSXDraggedWindowDetector.activeWindowProcessName();
+			return "";
+			//return OSXDraggedWindowDetector.activeWindowProcessName();
 		}
 	}
 	
@@ -51,12 +54,12 @@ public class DraggedWindowDetector {
 			String best = null;
 			int match = 0;
 			for (String f : filepaths) {
-				System.out.println(f);
+				//System.out.println(f);
 				int end = f.lastIndexOf(".");
 				if (end < 0) {
 					end = f.length();
 				}
-				System.out.println(f.substring(f.lastIndexOf("\\") + 1, end));
+				//System.out.println(f.substring(f.lastIndexOf("\\") + 1, end));
 				if (title.contains(f.substring(f.lastIndexOf("\\") + 1, end))) {
 					if (end - f.lastIndexOf("\\") + 1 > match) {
 						best = f;
@@ -66,12 +69,13 @@ public class DraggedWindowDetector {
 			}
 
 			if (best != null) {
-				System.out.println("found " + best);
+				//System.out.println("found " + best);
 				return (new WindowsShortcut(new File(best))).getRealFilename();
 			}
 			return null;
 		} else {
-			return OSXDraggedWindowDetector.activeWindowFilePath();
+			return "";
+			//return OSXDraggedWindowDetector.activeWindowFilePath();
 		}
 	}
 	
@@ -103,14 +107,14 @@ public class DraggedWindowDetector {
 		}
 		
 		for (int i = 0; i < paths.length; i++) {
-			System.out.println(paths[i]);
+			//System.out.println(paths[i]);
 			int end = paths[i].lastIndexOf(".");
 			if (end < 0) {
 				end = paths[i].length();
 			}
 			if (paths[i].substring(Math.max(paths[i].lastIndexOf("/"), paths[i].lastIndexOf("\\")) + 1,
 					end).equalsIgnoreCase(exeName)) {
-				System.out.println("Choosing path: " + paths[i]);
+				//System.out.println("Choosing path: " + paths[i]);
 				return paths[i];
 			}
 		}
@@ -119,7 +123,7 @@ public class DraggedWindowDetector {
 	}
 	
 	public static void openFile(String exeName, String filePath) throws IOException {
-		System.out.println("opening " + filePath + ", exe: " + exeName);
+		//System.out.println("opening " + filePath + ", exe: " + exeName);
 		if (filePath == null) {
 			String closestExe = closestExecutableTo(exeName);
 			if (closestExe == null) {
@@ -127,23 +131,23 @@ public class DraggedWindowDetector {
 			} else {
 				if (OsCheck.getOperatingSystemType() == OSType.Windows) {
 					Runtime.getRuntime().exec(closestExe);
-					System.out.println("windows");
+					//System.out.println("windows");
 				} else if (OsCheck.getOperatingSystemType() == OSType.MacOS) {
-					System.out.println("mac");
+					//System.out.println("mac");
 					Desktop.getDesktop().open(new File(closestExe));
 				}
 			}
 		} else {
 			String closestExe = closestExecutableTo(exeName);
 			if (closestExe == null) {
-				System.out.println("no exe");
+				//System.out.println("no exe");
 				Desktop.getDesktop().open(new File(filePath));
 			} else {
 				if (OsCheck.getOperatingSystemType() == OSType.Windows) {
-					System.out.println("windows");
+					//System.out.println("windows");
 					Runtime.getRuntime().exec(closestExe + " \"" + filePath + "\"");
 				} else {
-					System.out.println("other os");
+					//System.out.println("other os");
 					Runtime.getRuntime().exec("open -a " + closestExe + " \"" + filePath + "\"");
 				}
 			}

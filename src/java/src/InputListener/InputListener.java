@@ -8,6 +8,7 @@ import InputReader.MouseExitScreenEvent;
 import InputReader.WindowDraggedEvent;
 import InputReader.WindowAckEvent;
 import Native.DraggedWindowDetector;
+import Native.OSX.OSXDraggedWindowDetector;
 import Networking.NetworkListener;
 import Networking.WindowShareNode;
 import ScreenDrawer.Draw;
@@ -90,7 +91,7 @@ public class InputListener {
 		@Override
 		public void process(String message) {
 			MouseEvent e = gson.fromJson(message, MouseEvent.class);
-			//System.out.println(e);
+			////System.out.println(e);
 			if (e.type.equals("move")) {
 				e = gson.fromJson(message, MouseMoveEvent.class);
 			} else if (e.type.equals("click") || e.type.equals("release")) {
@@ -143,7 +144,7 @@ public class InputListener {
 				}
 				// read event and process it.
 				MouseEvent event = eventQueue.remove();
-				//System.out.println(event.type);
+				////System.out.println(event.type);
 				if (event instanceof MouseMoveEvent) {
 					if (!remoteControl) {
 						/* only control mouse if it was transferred from original computer */
@@ -165,7 +166,7 @@ public class InputListener {
 						int dy = (int) (mme.dy * frac * height);
 						newX = Math.min(Math.max(0, mouseX + dx), width);
 						newY = Math.min(Math.max(0, mouseY + dy), height);
-						//System.out.println(newX + ", " + newY);
+						////System.out.println(newX + ", " + newY);
 						if (!justJumped && newX >= width || newX <= 0) {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false, newX <= 0);
 							e.send();
@@ -220,7 +221,7 @@ public class InputListener {
 
 									@Override
 									public void run() {
-										System.out.println("Thread waiting for file");
+										//System.out.println("Thread waiting for file");
 										draw.defineWindow(spinner, null);
 										while (dataFile == null) {
 											try {
@@ -230,7 +231,7 @@ public class InputListener {
 											}
 										}
 										draw.defineWindow(cursor, null);
-										System.out.println("File is here.");
+										//System.out.println("File is here.");
 										try {
 											DraggedWindowDetector.openFile(lastExecName, dataFile.getAbsolutePath());
 											dataFile = null;
@@ -243,7 +244,7 @@ public class InputListener {
 
 								}).start();
 							} else {
-								System.out.println("File path is null");
+								//System.out.println("File path is null");
 								draw.defineWindow(cursor, null);
 								try {
 									DraggedWindowDetector.openFile(lastExecName, null);
@@ -280,7 +281,7 @@ public class InputListener {
 					else
 						mouseX = width - 10;
 					mouseY = (int) (height * mlose.height); 
-					System.out.println("init: " + mouseX + ", " + mouseY);
+					//System.out.println("init: " + mouseX + ", " + mouseY);
 					cursorWindow.setVisible(true);
 					cursorWindow.setLocation(mouseX, mouseY);
 					
@@ -301,7 +302,7 @@ public class InputListener {
 					lastPathName = wde.filepath;
 					WindowAckEvent e = new WindowAckEvent(lastPathName);
 					e.send();
-					System.out.println("Sent ack event");
+					//System.out.println("Sent ack event");
 				} else if (event instanceof ChromeDataEvent) {
 					ChromeDataEvent cde = (ChromeDataEvent)event;
 					chromeUrls = cde.urls;

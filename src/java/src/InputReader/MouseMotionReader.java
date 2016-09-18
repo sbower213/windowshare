@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import Chrome.ChromeDataRequester;
 import Native.DraggedWindowDetector;
+import Native.OSX.OSXDraggedWindowDetector;
 import Networking.NetworkListener;
 import Networking.WindowShareNode;
 
@@ -85,7 +86,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 
 	@Override
 	public void nativeMouseDragged(NativeMouseEvent e) {
-		System.out.println(DraggedWindowDetector.activeWindowIsDragged());
+		//System.out.println(DraggedWindowDetector.activeWindowIsDragged());
 		if (mouseOffscreen) {
 			int dx = e.getX() - width/2;
 			int dy = e.getY() - height/2;
@@ -118,6 +119,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 
 	@Override
 	public void nativeMouseMoved(NativeMouseEvent e) {
+		////System.out.println(OSXDraggedWindowDetector.activeWindowBounds());
 		if (mouseOffscreen) {
 			int dx = e.getX() - width/2;
 			int dy = e.getY() - height/2;
@@ -155,9 +157,9 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
 			
 			if (DraggedWindowDetector.activeWindowIsDragged()) {
-				System.out.println("ACTIVE WINDOW IS DRAGGED");
+				//System.out.println("ACTIVE WINDOW IS DRAGGED");
 				String executableName = DraggedWindowDetector.executableNameForActiveWindow();
-				System.out.println("Executable: " + executableName);
+				//System.out.println("Executable: " + executableName);
 				String filepath = null;
 				try {
 					filepath = DraggedWindowDetector.filepathForActiveWindow();
@@ -168,7 +170,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				System.out.println("Filepath: " + filepath);
+				//System.out.println("Filepath: " + filepath);
 				WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
 				e.send();
 				
@@ -183,7 +185,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				
 				lastFilepath = filepath;
 			} else {
-				System.out.println("ACTIVE WINDOW IS NOT DRAGGED");
+				//System.out.println("ACTIVE WINDOW IS NOT DRAGGED");
 			}
 		}
 	}
@@ -211,9 +213,9 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		Gson gson = new Gson();
 		MouseEvent e = gson.fromJson(message, MouseEvent.class);
 
-		System.out.println("processing an event: " + e);
+		//System.out.println("processing an event: " + e);
 		if (e.type.equals("leftHostScreen")) {
-			System.out.println("mouse control is back");
+			//System.out.println("mouse control is back");
 			MouseExitScreenEvent mlse = gson.fromJson(message, MouseExitScreenEvent.class);
 			mouseOffscreen = false;
 			robot.mouseMove(mlse.fromRight == true ? 10 : width - 10, (int) (mlse.height * height));
@@ -231,7 +233,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			t.start();
 		} else if (e.type.equals("windowAck")) {
 			WindowAckEvent wae = gson.fromJson(message, WindowAckEvent.class);
-			System.out.println("EVENT OCCURED: " + wae);
+			//System.out.println("EVENT OCCURED: " + wae);
 			if (lastFilepath != null) {
 				File f = new File(lastFilepath);
 				fileTransfer.send(f);
