@@ -15,6 +15,8 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 
 public class MouseMotionReader implements NativeMouseInputListener, NetworkListener<String> {
 	int width, height;
@@ -100,7 +102,16 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			System.out.println("ACTIVE WINDOW IS DRAGGED");
 			String executableName = DraggedWindowDetector.executableNameForActiveWindow();
 			System.out.println("Executable: " + executableName);
-			String filepath = DraggedWindowDetector.filepathForActiveWindow();
+			String filepath = null;
+			try {
+				filepath = DraggedWindowDetector.filepathForActiveWindow();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			System.out.println("Filepath: " + filepath);
 			WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
 			e.send();
@@ -142,10 +153,13 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			robot.mouseMove(mlse.fromRight == true ? 10 : width - 10, (int) (mlse.height * height));
 		} else if (e.type.equals("windowAck")) {
 			WindowAckEvent wae = gson.fromJson(message, WindowAckEvent.class);
-			if (lastFilepath != null && wae.filepath == lastFilepath) {
+			System.out.println("EVENT OCCURED: " + wae);
+			if (lastFilepath != null) {
 				File f = new File(lastFilepath);
 				fileTransfer.send(f);
 			}
+		} else {
+			System.out.println("EVENT OCCURED: UNKNOWN");
 		}
 	}
 }

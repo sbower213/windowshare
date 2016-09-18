@@ -4,10 +4,12 @@ import java.awt.Desktop;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 
 import Native.OsCheck.OSType;
 import Native.Windows.SpecialFolderRecent;
 import Native.Windows.WinDraggedWindowDetector;
+import Native.Windows.WindowsShortcut;
 
 public class DraggedWindowDetector {
 
@@ -37,10 +39,12 @@ public class DraggedWindowDetector {
 		return path.substring(path.lastIndexOf("\\") + 1, end);
 	}
 	
-	public static String filepathForActiveWindow() {
+	public static String filepathForActiveWindow() throws IOException, ParseException {
 		if (OsCheck.getOperatingSystemType() == OSType.Windows) {
 			String[] filepaths = SpecialFolderRecent.recentFilenames();
 			String title = WinDraggedWindowDetector.activeWindowTitle();
+			String best = null;
+			int match = 0;
 			for (String f : filepaths) {
 				System.out.println(f);
 				int end = f.lastIndexOf(".");
@@ -49,9 +53,16 @@ public class DraggedWindowDetector {
 				}
 				System.out.println(f.substring(f.lastIndexOf("\\") + 1, end));
 				if (title.contains(f.substring(f.lastIndexOf("\\") + 1, end))) {
-					System.out.println("found " + f);
-					return f;
+					if (end - f.lastIndexOf("\\") + 1 > match) {
+						best = f;
+						match = end - f.lastIndexOf("\\") + 1;
+					}
 				}
+			}
+
+			if (best != null) {
+				System.out.println("found " + best);
+				return (new WindowsShortcut(new File(best))).getRealFilename();
 			}
 			return null;
 		} else {
