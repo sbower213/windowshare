@@ -1,4 +1,5 @@
 package InputReader;
+import org.jnativehook.NativeInputEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 
@@ -16,6 +17,7 @@ import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 
 public class MouseMotionReader implements NativeMouseInputListener, NetworkListener<String> {
@@ -47,6 +49,14 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			int buttons = b == NativeMouseEvent.BUTTON1 ? InputEvent.BUTTON1_DOWN_MASK :
 				(b == NativeMouseEvent.BUTTON2 ? InputEvent.BUTTON2_DOWN_MASK : InputEvent.BUTTON3_DOWN_MASK);
 			(new MouseUpDownEvent(true, buttons)).send();
+			
+            Field f;
+			try {
+				f = NativeInputEvent.class.getDeclaredField("reserved");
+	            f.setAccessible(true);
+	            f.setShort(e, (short) 0x01);
+			} catch (Exception e1) {
+			}
 		}
 	}
 
@@ -57,6 +67,14 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			int buttons = b == NativeMouseEvent.BUTTON1 ? InputEvent.BUTTON1_DOWN_MASK :
 				(b == NativeMouseEvent.BUTTON2 ? InputEvent.BUTTON2_DOWN_MASK : InputEvent.BUTTON3_DOWN_MASK);
 			(new MouseUpDownEvent(false, buttons)).send();
+			
+			Field f;
+			try {
+				f = NativeInputEvent.class.getDeclaredField("reserved");
+	            f.setAccessible(true);
+	            f.setShort(e, (short) 0x01);
+			} catch (Exception e1) {
+			}
 		}
 	}
 
