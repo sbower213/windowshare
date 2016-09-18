@@ -1,6 +1,6 @@
 package Native.Windows;
 
-// From http://www.rgagnon.com/javadetails/java-0653.html
+// Based on http://www.rgagnon.com/javadetails/java-0653.html
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,20 +9,28 @@ import java.io.InputStreamReader;
 
 public class SpecialFolderRecent {
 
-  public static String SF_ALLUSERSDESKTOP    = "AllUsersDesktop";
-  public static String SF_ALLUSERSSTARTMENU  = "AllUsersStartMenu";
-  public static String SF_ALLUSERSPROGRAMS   = "AllUsersPrograms";
-  public static String SF_ALLUSERSSTARTUP    = "AllUsersStartup";
-  public static String SF_DESKTOP            = "Desktop";
-  public static String SF_FAVORITES          = "Favorites";
-  public static String SF_MYDOCUMENT         = "MyDocuments";
-  public static String SF_PROGRAMS           = "Programs";
-  public static String SF_RECENT             = "Recent";
-  public static String SF_SENDTO             = "SendTo";
-  public static String SF_STARTMENU          = "StartMenu";
-  public static String SF_STARTUP            = "Startup";
-
-  private SpecialFolderRecent() {  }
+  public static String SF_RECENT = "Recent";
+  
+  public static String[] recentFilenames() {
+	  String path = getSpecialFolder(SF_RECENT);
+	  
+	  File folder = new File(path);
+	  File[] listOfFiles = folder.listFiles();
+	  String[] files = new String[listOfFiles.length];
+	  
+      for (int i = 0; i < listOfFiles.length; i++) {
+    	  files[i] = listOfFiles[i].getPath();
+    	  System.out.println(files[i]);
+        /*if (listOfFiles[i].isFile()) {]
+          //System.out.println("File " + listOfFiles[i].getName());
+        } else if (listOfFiles[i].isDirectory()) {
+          //System.out.println("Directory " + listOfFiles[i].getName());
+          // Do nothing, we don't need to look in folders
+        }*/
+      }
+      
+      return files;
+  }
 
   public static String getSpecialFolder(String folder) {
     String result = "";
@@ -49,8 +57,8 @@ public class SpecialFolderRecent {
     }
     return result;
   }
-
-  public static void main(String[] args){
-    System.out.println(SpecialFolderRecent.getSpecialFolder(SpecialFolderRecent.SF_RECENT));
+  
+  public static void main(String[] args) {
+	  recentFilenames();
   }
 }

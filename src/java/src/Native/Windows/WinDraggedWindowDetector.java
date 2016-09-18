@@ -31,12 +31,21 @@ public class WinDraggedWindowDetector {
 		RECT rect = new RECT();
 		User32.INSTANCE.GetWindowRect(wnd, rect);
 		
-		System.out.println(rect);
-		
 		Rectangle r = new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 		
-		System.out.println(r);
-		
 		return r;
+	}
+	
+	public static String activeWindowTitle() {
+		GUITHREADINFO info=new GUITHREADINFO();
+		info.cbSize=info.size();
+		User32.INSTANCE.GetGUIThreadInfo(0, info);
+		HWND wnd = info.hwndActive;
+		
+		int titleLength = User32.INSTANCE.GetWindowTextLength(wnd);
+		char[] titleArr = new char[titleLength];
+		User32.INSTANCE.GetWindowText(wnd, titleArr, titleLength);
+		
+		return new String(titleArr);
 	}
 }
