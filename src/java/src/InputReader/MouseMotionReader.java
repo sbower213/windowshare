@@ -148,7 +148,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			waiting = true;
 			try {
 				Thread.sleep(33);
-				(new MouseMoveEvent(dx, dy)).send();
+				(new MouseMoveEvent((dx * 1.0) / width, (dy * 1.0) / height)).send();
 				robot.mouseMove(width/2, height/2);
 			} catch (InterruptedException e) {
 				e.printStackTrace();

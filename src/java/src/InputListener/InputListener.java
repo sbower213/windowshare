@@ -143,6 +143,10 @@ public class InputListener {
 						continue;
 					}
 					// interpolate the current position with the new position.
+					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+					int width = (int)screenSize.getWidth();
+					int height = (int)screenSize.getHeight();
+					
 					MouseMoveEvent mme = (MouseMoveEvent)event;
 					long startTime = System.currentTimeMillis();
 					long curTime = startTime;
@@ -150,11 +154,8 @@ public class InputListener {
 					do {
 						long deltaTime = curTime - startTime;
 						float frac = (deltaTime * 1.0f) / MouseEventHandler.DELTA;
-						int dx = (int) (mme.dx * frac);
-						int dy = (int) (mme.dy * frac);
-						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-						int width = (int)screenSize.getWidth();
-						int height = (int)screenSize.getHeight();
+						int dx = (int) (mme.dx * frac * width);
+						int dy = (int) (mme.dy * frac * height);
 						newX = Math.min(Math.max(0, mouseX + dx), width);
 						newY = Math.min(Math.max(0, mouseY + dy), height);
 						//System.out.println(newX + ", " + newY);

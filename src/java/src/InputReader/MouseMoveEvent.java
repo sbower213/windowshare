@@ -1,7 +1,7 @@
 package InputReader;
 
 public class MouseMoveEvent extends MouseEvent {
-	public int dx, dy;
+	public double dx, dy;
 	
 	public MouseMoveEvent() {
 		type = "move";
@@ -9,7 +9,7 @@ public class MouseMoveEvent extends MouseEvent {
 		dy = 0;
 	}
 	
-	public MouseMoveEvent(int _dx, int _dy) {
+	public MouseMoveEvent(double _dx, double _dy) {
 		type = "move";
 		dx = _dx;
 		dy = _dy;
