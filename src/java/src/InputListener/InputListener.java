@@ -44,7 +44,7 @@ public class InputListener implements NetworkListener<String> {
 
 	public void process(String message) {
 		MouseEvent e = gson.fromJson(message, MouseEvent.class);
-		//System.out.println(e);
+		System.out.println(e);
 		if (e.type.equals("move")) {
 			e = gson.fromJson(message, MouseMoveEvent.class);
 		} else if (e.type.equals("click") || e.type.equals("release")) {
@@ -60,7 +60,7 @@ public class InputListener implements NetworkListener<String> {
 	
 	public void openCursorWindow() {
 		try {
-			BufferedImage cursor = ImageIO.read(new File("cursor_win_hand.png"));
+			BufferedImage cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
 			cursorWindow = Draw.defineWindow(cursor);
 			cursorWindow.setLocation(mouseX, mouseY);
 		} catch (IOException e) {
@@ -87,6 +87,7 @@ public class InputListener implements NetworkListener<String> {
 				}
 				// read event and process it.
 				MouseEvent event = eventQueue.remove();
+				System.out.println(event.type);
 				if (event instanceof MouseMoveEvent) {
 					if (!remoteControl) {
 						/* only control mouse if it was transferred from original computer */
@@ -96,16 +97,17 @@ public class InputListener implements NetworkListener<String> {
 					MouseMoveEvent mme = (MouseMoveEvent)event;
 					long startTime = System.currentTimeMillis();
 					long curTime = startTime;
+					int newX, newY;
 					do {
 						long deltaTime = curTime - startTime;
 						float frac = (deltaTime * 1.0f) / MouseEventHandler.DELTA;
 						int dx = (int) (mme.dx * frac);
 						int dy = (int) (mme.dy * frac);
-						int newX = mouseX + dx;
-						int newY = mouseY + dy;
 						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 						int width = (int)screenSize.getWidth();
 						int height = (int)screenSize.getHeight();
+						newX = Math.min(Math.max(0, mouseX + dx), width);
+						newY = Math.min(Math.max(0, mouseY + dy), height);
 						if (newX >= width) {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false);
 							e.send();
@@ -115,11 +117,12 @@ public class InputListener implements NetworkListener<String> {
 							mouseY =  newY;
 							break;
 						}
-						mouseX = newX;
-						mouseX = newY;
-						cursorWindow.setLocation(mouseX, mouseY);
+						System.out.println(mouseX + ", " + mouseY);
+						cursorWindow.setLocation(newX, newY);
 						curTime = System.currentTimeMillis();
 					} while (curTime - startTime < MouseEventHandler.DELTA);
+					mouseX = newX;
+					mouseY = newY;
 				} else if (event instanceof MouseUpDownEvent) {
 					if (event.type.equals("click")) {
 						Point start = MouseInfo.getPointerInfo().getLocation();
@@ -138,7 +141,8 @@ public class InputListener implements NetworkListener<String> {
 					int width = (int)screenSize.getWidth();
 					int height = (int)screenSize.getHeight();
 					mouseX = width - 10;
-					mouseY = (int) (height * mlose.height);
+					mouseY = (int) (height * mlose.height); 
+					System.out.println("init: " + mouseX + ", " + mouseY);
 					openCursorWindow();
 				}
 				else {
