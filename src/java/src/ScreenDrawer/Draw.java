@@ -1,9 +1,11 @@
 package ScreenDrawer;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Robot;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,29 +13,28 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import Native.Windows.WinDraggedWindowDetector;
+
 public class Draw {
 	
 	private static BufferedImage image;
 	
-	public static void main(String[] args) {
-		Window w = defineWindow();
+	public static void main(String[] args) throws InterruptedException, AWTException {
+		Thread.sleep(3000);
+		Robot r = new Robot();
+		BufferedImage i  = r.createScreenCapture(WinDraggedWindowDetector.activeWindowBounds());
+		
+		Window w = defineWindow(i);
+		Thread.sleep(15000);
 		clearWindow(w);
 	}
-	static Window defineWindow(){
+	static Window defineWindow(BufferedImage image){
 		Window w=new Window(null)
 		{
 		  @Override
 		  public void paint(Graphics g)
 		  {
-		    final Font font = getFont().deriveFont(48f);
-		    g.setFont(font);
-		    g.setColor(Color.RED);
-		    final String message = "Hello";
-		    FontMetrics metrics = g.getFontMetrics();
-		    g.drawString(message,
-		      (getWidth()-metrics.stringWidth(message))/2,
-		      (getHeight()-metrics.getHeight())/2);
-		    //drawImage("hello",g);
+		    g.drawImage(image, 0, 0, null);
 		  }
 		  @Override
 		  public void update(Graphics g)

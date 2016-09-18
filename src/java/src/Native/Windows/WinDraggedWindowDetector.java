@@ -1,5 +1,7 @@
 package Native.Windows;
 
+import java.awt.Rectangle;
+
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.RECT;
@@ -21,14 +23,20 @@ public class WinDraggedWindowDetector {
 		return ((flags & 0x00000002) == 0) ? false : true;
 	}
 	
-	public static RECT activeWindowBounds() {
+	public static Rectangle activeWindowBounds() {
 		GUITHREADINFO info=new GUITHREADINFO();
 		info.cbSize=info.size();
 		User32.INSTANCE.GetGUIThreadInfo(0, info);
-		HWND wnd = info.hwndMoveSize;
+		HWND wnd = info.hwndActive;
 		RECT rect = new RECT();
 		User32.INSTANCE.GetWindowRect(wnd, rect);
 		
-		return rect;
+		System.out.println(rect);
+		
+		Rectangle r = new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		
+		System.out.println(r);
+		
+		return r;
 	}
 }
