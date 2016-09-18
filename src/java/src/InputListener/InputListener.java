@@ -132,11 +132,22 @@ public class InputListener implements NetworkListener<String> {
 						origMouseX = start.x;
 						origMouseY = start.y;
 						robot.mouseMove(mouseX, mouseY);
+						try {
+							robot.wait(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						robot.mousePress(((MouseUpDownEvent) event).buttons);
-						robot.waitForIdle();
 						mouseDown = true;
 					} else if (event.type.equals("release")) {
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
+						try {
+							robot.wait(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						robot.mouseMove(origMouseX, origMouseY);
 						robot.waitForIdle();
 						mouseDown = false;
