@@ -21,15 +21,8 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 		int size = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(sizeBytes).getInt(0);
 		System.out.println("Size: " + size);
 		byte[] imageBytes = readExactly(in, size);
-		for (int i = 0 ; i < 20; i++) {
-			System.out.print(imageBytes[imageBytes.length - i - 1] + ", ");
-		}
 		ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
-	    try {
-	        return ImageIO.read(bais);
-	    } catch (IOException e) {
-	        throw new RuntimeException(e);
-	    }
+	    return ImageIO.read(bais);
 	}
 
 	@Override
