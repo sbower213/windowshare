@@ -9,6 +9,7 @@ public class WindowAckEvent extends MouseEvent {
 	}
 	
 	public WindowAckEvent(String path) {
+		type = "windowAck";
 		filepath = path;
 	}
 }
