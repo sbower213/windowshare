@@ -26,7 +26,7 @@ public class StringTransferThread extends TransferThread<String> {
 	
 	@Override
 	public String read() throws IOException {
-		BufferedReader ins = (BufferedReader)in;		
+		BufferedReader ins = (BufferedReader)in;	
 		/* Read message if available */
 		String message = ins.readLine();
 		//System.out.println("message: " + message);
