@@ -197,7 +197,6 @@ public class InputListener {
 						robot.mousePress(((MouseUpDownEvent) event).buttons);
 						mouseDown = true;
 					} else if (event.type.equals("release")) {
-						draw.defineWindow(spinner, null);
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
 						cursorWindow.setVisible(true);
 						try {
@@ -218,6 +217,7 @@ public class InputListener {
 									@Override
 									public void run() {
 										System.out.println("Thread waiting for file");
+										draw.defineWindow(spinner, null);
 										while (dataFile == null) {
 											try {
 												Thread.sleep(200);
