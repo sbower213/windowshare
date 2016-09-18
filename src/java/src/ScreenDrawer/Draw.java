@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import Native.Windows.WinDraggedWindowDetector;
+import Native.DraggedWindowDetector;
 
 public class Draw {
 	
@@ -22,7 +22,7 @@ public class Draw {
 	public static void main(String[] args) throws InterruptedException, AWTException {
 		Thread.sleep(3000);
 		Robot r = new Robot();
-		BufferedImage i  = r.createScreenCapture(WinDraggedWindowDetector.activeWindowBounds());
+		BufferedImage i  = r.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
 		
 		Window w = defineWindow(i);
 		Thread.sleep(15000);
