@@ -62,7 +62,9 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				waitAndSend(dx, dy);
 			}
 		} else if (e.getX() <= 0) {
-			leaveScreen(e.getY());
+			leaveScreen(e.getY(), false);
+		} else if (e.getX() >= width) {
+			leaveScreen(e.getY(), true);
 		}
 	}
 
@@ -76,14 +78,16 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				waitAndSend(dx, dy);
 			}
 		} else if (e.getX() <= 0) {
-			leaveScreen(e.getY());
+			leaveScreen(e.getY(), false);
+		} else if (e.getX() >= width) {
+			leaveScreen(e.getY(), true);
 		}
 	}
 	
-	public void leaveScreen(int h) {
+	public void leaveScreen(int h, boolean fromRight) {
 		mouseOffscreen = true;
 		
-		(new MouseExitScreenEvent((1.0 * h) / height, true)).send();
+		(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
 	}
 	
 	public void waitAndSend(int dx, int dy) {
@@ -111,7 +115,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			System.out.println("mouse control is back");
 			MouseExitScreenEvent mlse = gson.fromJson(message, MouseExitScreenEvent.class);
 			mouseOffscreen = false;
-			robot.mouseMove(10, (int) (mlse.height * height));
+			robot.mouseMove(mlse.fromRight == true ? 10 : width - 10, (int) (mlse.height * height));
 		}
 	}
 }

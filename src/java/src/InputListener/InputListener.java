@@ -105,8 +105,8 @@ public class InputListener implements NetworkListener<String> {
 						int height = (int)screenSize.getHeight();
 						newX = Math.min(Math.max(0, mouseX + dx), width);
 						newY = Math.min(Math.max(0, mouseY + dy), height);
-						if (newX >= width) {
-							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false);
+						if (newX >= width || newX <= 0) {
+							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, true, newX <= 0);
 							e.send();
 							remoteControl = false;
 							cursorWindow.setVisible(false);
@@ -136,7 +136,10 @@ public class InputListener implements NetworkListener<String> {
 					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 					int width = (int)screenSize.getWidth();
 					int height = (int)screenSize.getHeight();
-					mouseX = width - 10;
+					if (mlose.fromRight)
+						mouseX = 10;
+					else
+						mouseX = width - 10;
 					mouseY = (int) (height * mlose.height); 
 					System.out.println("init: " + mouseX + ", " + mouseY);
 					cursorWindow.setVisible(true);
