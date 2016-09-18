@@ -261,6 +261,7 @@ public class InputListener {
 					lastPathName = wde.filepath;
 					WindowAckEvent e = new WindowAckEvent(lastPathName);
 					e.send();
+					System.out.println("Sent ack event");
 				} else {
 					// do other things with other events
 				}
