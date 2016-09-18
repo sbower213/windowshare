@@ -116,7 +116,7 @@ public class InputListener implements NetworkListener<String> {
 							break;
 						}
 						mouseX = newX;
-						mouseX = newY;
+						mouseY = newY;
 						cursorWindow.setLocation(mouseX, mouseY);
 						curTime = System.currentTimeMillis();
 					} while (curTime - startTime < MouseEventHandler.DELTA);
