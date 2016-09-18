@@ -42,6 +42,7 @@ public class InputListener {
 	WindowShareNode<BufferedImage> imageTransfer;
 	BufferedImage cursor;
 	File dataFile;
+	boolean justJumped;
 	
 	Queue<MouseEvent> eventQueue;
 	
@@ -159,7 +160,7 @@ public class InputListener {
 						newX = Math.min(Math.max(0, mouseX + dx), width);
 						newY = Math.min(Math.max(0, mouseY + dy), height);
 						//System.out.println(newX + ", " + newY);
-						if (newX >= width || newX <= 0) {
+						if (!justJumped && newX >= width || newX <= 0) {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false, newX <= 0);
 							e.send();
 							remoteControl = false;
@@ -254,6 +255,18 @@ public class InputListener {
 					System.out.println("init: " + mouseX + ", " + mouseY);
 					cursorWindow.setVisible(true);
 					cursorWindow.setLocation(mouseX, mouseY);
+					
+					justJumped = true;
+					Thread t = new Thread(() -> {
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						justJumped = false;
+					});
+					t.start();
 				} else if (event instanceof WindowDraggedEvent) {
 					WindowDraggedEvent wde = (WindowDraggedEvent)event;
 					lastExecName = wde.executableName;

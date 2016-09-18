@@ -25,6 +25,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	Robot robot;
 	boolean waiting;
 	boolean mouseOffscreen;
+	boolean justJumped;
 	public WindowShareNode<File> fileTransfer;
 	public WindowShareNode<BufferedImage> imageTransfer;
 	String lastFilepath;
@@ -112,34 +113,36 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	}
 	
 	public void leaveScreen(int h, boolean fromRight) {
-		mouseOffscreen = true;
-		
-		(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
-		
-		if (DraggedWindowDetector.activeWindowIsDragged()) {
-			System.out.println("ACTIVE WINDOW IS DRAGGED");
-			String executableName = DraggedWindowDetector.executableNameForActiveWindow();
-			System.out.println("Executable: " + executableName);
-			String filepath = null;
-			try {
-				filepath = DraggedWindowDetector.filepathForActiveWindow();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (ParseException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		if (!justJumped) {
+			mouseOffscreen = true;
+			
+			(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
+			
+			if (DraggedWindowDetector.activeWindowIsDragged()) {
+				System.out.println("ACTIVE WINDOW IS DRAGGED");
+				String executableName = DraggedWindowDetector.executableNameForActiveWindow();
+				System.out.println("Executable: " + executableName);
+				String filepath = null;
+				try {
+					filepath = DraggedWindowDetector.filepathForActiveWindow();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				System.out.println("Filepath: " + filepath);
+				WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
+				e.send();
+				
+				BufferedImage i = robot.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
+				imageTransfer.send(i);
+				
+				lastFilepath = filepath;
+			} else {
+				System.out.println("ACTIVE WINDOW IS NOT DRAGGED");
 			}
-			System.out.println("Filepath: " + filepath);
-			WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
-			e.send();
-			
-			BufferedImage i = robot.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
-			imageTransfer.send(i);
-			
-			lastFilepath = filepath;
-		} else {
-			System.out.println("ACTIVE WINDOW IS NOT DRAGGED");
 		}
 	}
 	
@@ -169,6 +172,18 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			MouseExitScreenEvent mlse = gson.fromJson(message, MouseExitScreenEvent.class);
 			mouseOffscreen = false;
 			robot.mouseMove(mlse.fromRight == true ? 10 : width - 10, (int) (mlse.height * height));
+			
+			justJumped = true;
+			Thread t = new Thread(() -> {
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				justJumped = false;
+			});
+			t.start();
 		} else if (e.type.equals("windowAck")) {
 			WindowAckEvent wae = gson.fromJson(message, WindowAckEvent.class);
 			System.out.println("EVENT OCCURED: " + wae);
@@ -176,8 +191,6 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				File f = new File(lastFilepath);
 				fileTransfer.send(f);
 			}
-		} else {
-			System.out.println("EVENT OCCURED: UNKNOWN");
 		}
 	}
 }
