@@ -194,6 +194,7 @@ public class InputListener {
 						robot.mousePress(((MouseUpDownEvent) event).buttons);
 						mouseDown = true;
 					} else if (event.type.equals("release")) {
+						draw.defineWindow(cursor, null);
 						robot.mouseRelease(((MouseUpDownEvent) event).buttons);
 						try {
 							synchronized(robot) {

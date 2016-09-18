@@ -26,7 +26,7 @@ import Networking.WindowShareNode;
 import Networking.WindowShareServer;
 
 public class Runner {
-	static final boolean isServer = false;
+	static final boolean isServer = true;
 
     private static class VoidDispatchService extends AbstractExecutorService {
         private boolean running = false;
