@@ -21,6 +21,9 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 		int size = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(sizeBytes).getInt(0);
 		System.out.println("Size: " + size);
 		byte[] imageBytes = readExactly(in, size);
+		for (int i = 0 ; i < 20; i++) {
+			System.out.print(imageBytes[imageBytes.length - i - 1] + ", ");
+		}
 		ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
 	    try {
 	        return ImageIO.read(bais);
@@ -36,10 +39,6 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 		byte[] bytes = baos.toByteArray();
 		System.out.println("Size: " + bytes.length);
 		byte[] lenBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bytes.length).array();
-		FileOutputStream testOut = new FileOutputStream("/Users/robbieadkins/Desktop/test.jpg");
-		testOut.write(bytes);
-		testOut.flush();
-		testOut.close();
 		OutputStream out = sock.getOutputStream();
 		out.write(lenBytes);
 		out.write(bytes);
@@ -50,15 +49,14 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	{
 		System.out.println("available: " + input.available());
 	    byte[] data = new byte[size];
+	    byte[] chunk = new byte[1024];
 	    int index = 0;
-	    while (index < size)
+	    int bytesRead = 0;
+	    int off = 0;
+	    while (off < size && (bytesRead = input.read(chunk)) >= 0)
 	    {
-	        int bytesRead = input.read(data, index, size - index);
-	        if (bytesRead < 0)
-	        {
-	            throw new IOException("Insufficient data in stream");
-	        }
-	        index += size;
+	        System.arraycopy(chunk, 0, data, off, bytesRead);
+	        off += bytesRead;
 	    }
 	    System.out.println("Bytes read: " + index);
 	    return data;
