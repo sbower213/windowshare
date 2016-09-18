@@ -1,5 +1,6 @@
 package InputListener;
 
+import InputReader.ChromeDataEvent;
 import InputReader.MouseEvent;
 import InputReader.MouseMoveEvent;
 import InputReader.MouseUpDownEvent;
@@ -28,6 +29,8 @@ import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
 
+import Chrome.ChromeDataRequester;
+
 public class InputListener {
 	Robot robot;
 	Gson gson;
@@ -44,6 +47,7 @@ public class InputListener {
 	BufferedImage spinner;
 	File dataFile;
 	boolean justJumped;
+	String[] chromeUrls;
 	
 	Queue<MouseEvent> eventQueue;
 	
@@ -240,7 +244,18 @@ public class InputListener {
 								draw.defineWindow(cursor, null);
 								try {
 									DraggedWindowDetector.openFile(lastExecName, null);
+									
+									if (lastExecName.equalsIgnoreCase("chrome")) {
+										while(chromeUrls == null) {
+											Thread.sleep(250);
+										}
+										ChromeDataRequester.openUrls(chromeUrls);
+										chromeUrls = null;
+									}
 								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (InterruptedException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -281,6 +296,9 @@ public class InputListener {
 					WindowAckEvent e = new WindowAckEvent(lastPathName);
 					e.send();
 					System.out.println("Sent ack event");
+				} else if (event instanceof ChromeDataEvent) {
+					ChromeDataEvent cde = (ChromeDataEvent)event;
+					chromeUrls = cde.urls;
 				} else {
 					// do other things with other events
 				}

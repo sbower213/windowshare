@@ -5,6 +5,7 @@ import org.jnativehook.mouse.NativeMouseInputListener;
 
 import com.google.gson.Gson;
 
+import Chrome.ChromeDataRequester;
 import Native.DraggedWindowDetector;
 import Networking.NetworkListener;
 import Networking.WindowShareNode;
@@ -16,11 +17,14 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 
 public class MouseMotionReader implements NativeMouseInputListener, NetworkListener<String> {
+	static final boolean hasChromeExtension = false;
+	
 	int width, height;
 	Robot robot;
 	boolean waiting;
@@ -90,9 +94,25 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				waitAndSend(dx, dy);
 			}
 		} else if (e.getX() <= 0) {
-			leaveScreen(e.getY(), false);
+			try {
+				leaveScreen(e.getY(), false);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		} else if (e.getX() >= width) {
-			leaveScreen(e.getY(), true);
+			try {
+				leaveScreen(e.getY(), true);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 
@@ -106,13 +126,29 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				waitAndSend(dx, dy);
 			}
 		} else if (e.getX() <= 0) {
-			leaveScreen(e.getY(), false);
+			try {
+				leaveScreen(e.getY(), false);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		} else if (e.getX() >= width) {
-			leaveScreen(e.getY(), true);
+			try {
+				leaveScreen(e.getY(), true);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 	
-	public void leaveScreen(int h, boolean fromRight) {
+	public void leaveScreen(int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!justJumped) {
 			mouseOffscreen = true;
 			
@@ -135,6 +171,12 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				System.out.println("Filepath: " + filepath);
 				WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
 				e.send();
+				
+				if (hasChromeExtension && executableName.equalsIgnoreCase("chrome")) {
+					String[] chromeUrls = ChromeDataRequester.getUrls();
+					ChromeDataEvent cde = new ChromeDataEvent(chromeUrls);
+					cde.send();
+				}
 				
 				BufferedImage i = robot.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
 				imageTransfer.send(i);
