@@ -55,14 +55,13 @@ public class Draw implements NetworkListener<BufferedImage> {
 		  @Override
 		  public void update(Graphics g)
 		  {
-			  
 			  //paint(g);
 		  }
 		};
 		w.setAlwaysOnTop(true);
 		w.setBounds(w.getGraphicsConfiguration().getBounds());
 		w.setBackground(new Color(0, true));
-		w.setVisible(true);
+		//w.setVisible(true);
 		return w;
 	}
 	

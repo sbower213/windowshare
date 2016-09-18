@@ -39,6 +39,14 @@ public class InputListener implements NetworkListener<String> {
 		gson = new Gson();
 		remoteControl = false;
 		eventQueue = new ConcurrentLinkedQueue<MouseEvent>();
+		BufferedImage cursor;
+		try {
+			cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
+			cursorWindow = Draw.defineWindow(cursor);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		new Thread(new MouseEventHandler()).start();
 	}
 
@@ -55,17 +63,6 @@ public class InputListener implements NetworkListener<String> {
 		eventQueue.add(e);
 		synchronized(eventQueue) {
 			eventQueue.notify();
-		}
-	}
-	
-	public void openCursorWindow() {
-		try {
-			BufferedImage cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
-			cursorWindow = Draw.defineWindow(cursor);
-			cursorWindow.setLocation(mouseX, mouseY);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
@@ -112,12 +109,11 @@ public class InputListener implements NetworkListener<String> {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false);
 							e.send();
 							remoteControl = false;
-							Draw.clearWindow(cursorWindow);
+							cursorWindow.setVisible(false);
 							mouseX = width - 10;
 							mouseY =  newY;
 							break;
 						}
-						System.out.println(mouseX + ", " + mouseY);
 						cursorWindow.setLocation(newX, newY);
 						curTime = System.currentTimeMillis();
 					} while (curTime - startTime < MouseEventHandler.DELTA);
@@ -143,7 +139,8 @@ public class InputListener implements NetworkListener<String> {
 					mouseX = width - 10;
 					mouseY = (int) (height * mlose.height); 
 					System.out.println("init: " + mouseX + ", " + mouseY);
-					openCursorWindow();
+					cursorWindow.setVisible(true);
+					cursorWindow.setLocation(mouseX, mouseY);
 				}
 				else {
 					// do other things with other events
