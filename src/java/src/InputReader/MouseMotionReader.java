@@ -96,8 +96,16 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 		(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
 		
 		if (DraggedWindowDetector.activeWindowIsDragged()) {
+			String executableName = DraggedWindowDetector.executableNameForActiveWindow();
+			String filepath = DraggedWindowDetector.filepathForActiveWindow();
+			WindowDraggedEvent e = new WindowDraggedEvent(executableName, filepath);
+			e.send();
+			
 			BufferedImage i = robot.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
 			imageTransfer.send(i);
+			
+			File f = new File(filepath);
+			fileTransfer.send(f);
 		}
 	}
 	
