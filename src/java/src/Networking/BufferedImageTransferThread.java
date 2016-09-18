@@ -9,6 +9,8 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 
 	@Override
 	public BufferedImage read() throws IOException {
+		if (sock.getInputStream() == null)
+			return null;
 		return ImageIO.read(sock.getInputStream());
 	}
 
