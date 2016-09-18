@@ -3,6 +3,7 @@ package Networking;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.InputStream;
@@ -17,7 +18,7 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	public BufferedImage read() throws IOException {
 		InputStream in = sock.getInputStream();
 		byte[] sizeBytes = readExactly(in, 4);
-		int size = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(sizeBytes).getInt();
+		int size = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(sizeBytes).getInt(0);
 		System.out.println("Size: " + size);
 		byte[] imageBytes = readExactly(in, size);
 		ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
@@ -31,10 +32,14 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	@Override
 	public void write(BufferedImage message) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ImageIO.write(message, "png", baos);
+		ImageIO.write(message, "jpg", baos);
 		byte[] bytes = baos.toByteArray();
 		System.out.println("Size: " + bytes.length);
 		byte[] lenBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bytes.length).array();
+		FileOutputStream testOut = new FileOutputStream("test.jpg");
+		testOut.write(bytes);
+		testOut.flush();
+		testOut.close();
 		OutputStream out = sock.getOutputStream();
 		out.write(lenBytes);
 		out.write(bytes);
@@ -43,6 +48,7 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	
 	private static byte[] readExactly(InputStream input, int size) throws IOException
 	{
+		System.out.println("available: " + input.available());
 	    byte[] data = new byte[size];
 	    int index = 0;
 	    while (index < size)
@@ -54,6 +60,7 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 	        }
 	        index += size;
 	    }
+	    System.out.println("Bytes read: " + index);
 	    return data;
 	}
 }

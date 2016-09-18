@@ -25,9 +25,11 @@ public class Draw implements NetworkListener<BufferedImage> {
 	public static void main(String[] args) throws InterruptedException, AWTException {
 		WindowShareServer<BufferedImage> server = new WindowShareServer<BufferedImage>
 			(WindowShareServer.FILE_PORT, BufferedImageTransferThread.class);
-		
+
+		server.addListener(new Draw());
 		Thread t = new Thread(server);
 		t.start();
+		t.join();
 	}
 
 	@Override
