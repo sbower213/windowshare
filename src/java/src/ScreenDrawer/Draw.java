@@ -14,20 +14,34 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import Native.DraggedWindowDetector;
+import Networking.BufferedImageTransferThread;
+import Networking.NetworkListener;
+import Networking.WindowShareServer;
 
-public class Draw {
+public class Draw implements NetworkListener<BufferedImage> {
 	
 	private static BufferedImage image;
 	
 	public static void main(String[] args) throws InterruptedException, AWTException {
-		Thread.sleep(3000);
-		Robot r = new Robot();
-		BufferedImage i  = r.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
+		WindowShareServer<BufferedImage> server = new WindowShareServer<BufferedImage>
+			(WindowShareServer.FILE_PORT, BufferedImageTransferThread.class);
 		
-		Window w = defineWindow(i);
-		Thread.sleep(15000);
+		Thread t = new Thread(server);
+		t.start();
+	}
+
+	@Override
+	public void process(BufferedImage message) {
+		Window w = defineWindow(message);
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		clearWindow(w);
 	}
+	
 	static Window defineWindow(BufferedImage image){
 		Window w=new Window(null)
 		{

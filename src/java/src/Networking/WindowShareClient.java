@@ -6,8 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class WindowShareClient<T> implements WindowShareNode<T> {
-	//public static final String SERVER_IP = "18.22.8.142";
-	public static final String SERVER_IP = "127.0.0.1";
+	public static final String SERVER_IP = "18.22.8.142";
 	
 	private Socket sock;
 	private Set<NetworkListener<T>> listeners;
