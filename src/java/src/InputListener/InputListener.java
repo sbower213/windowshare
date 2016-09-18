@@ -43,7 +43,7 @@ public class InputListener implements NetworkListener<String> {
 		try {
 			cursor = ImageIO.read(new File(getClass().getResource("cursor_win_hand.png").getPath()));
 			cursorWindow = Draw.defineWindow(cursor);
-			cursorWindow.setSize(cursor.getWidth(), cursor.getHeight());
+			//cursorWindow.setSize(cursor.getWidth(), cursor.getHeight());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,7 +53,7 @@ public class InputListener implements NetworkListener<String> {
 
 	public void process(String message) {
 		MouseEvent e = gson.fromJson(message, MouseEvent.class);
-		System.out.println(e);
+		//System.out.println(e);
 		if (e.type.equals("move")) {
 			e = gson.fromJson(message, MouseMoveEvent.class);
 		} else if (e.type.equals("click") || e.type.equals("release")) {
@@ -85,7 +85,7 @@ public class InputListener implements NetworkListener<String> {
 				}
 				// read event and process it.
 				MouseEvent event = eventQueue.remove();
-				System.out.println(event.type);
+				//System.out.println(event.type);
 				if (event instanceof MouseMoveEvent) {
 					if (!remoteControl) {
 						/* only control mouse if it was transferred from original computer */
@@ -106,8 +106,9 @@ public class InputListener implements NetworkListener<String> {
 						int height = (int)screenSize.getHeight();
 						newX = Math.min(Math.max(0, mouseX + dx), width);
 						newY = Math.min(Math.max(0, mouseY + dy), height);
+						System.out.println(newX + ", " + newY);
 						if (newX >= width || newX <= 0) {
-							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, true, newX <= 0);
+							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false, newX <= 0);
 							e.send();
 							remoteControl = false;
 							cursorWindow.setVisible(false);
