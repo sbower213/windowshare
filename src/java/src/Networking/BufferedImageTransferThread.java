@@ -36,7 +36,7 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 		byte[] bytes = baos.toByteArray();
 		System.out.println("Size: " + bytes.length);
 		byte[] lenBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bytes.length).array();
-		FileOutputStream testOut = new FileOutputStream("test.jpg");
+		FileOutputStream testOut = new FileOutputStream("/Users/robbieadkins/Desktop/test.jpg");
 		testOut.write(bytes);
 		testOut.flush();
 		testOut.close();
