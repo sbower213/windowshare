@@ -23,6 +23,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	boolean mouseOffscreen;
 	WindowShareNode<File> fileTransfer;
 	WindowShareNode<BufferedImage> imageTransfer;
+	String lastFilepath;
 	
 	public MouseMotionReader() throws AWTException {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -104,8 +105,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			BufferedImage i = robot.createScreenCapture(DraggedWindowDetector.activeWindowBounds());
 			imageTransfer.send(i);
 			
-			File f = new File(filepath);
-			fileTransfer.send(f);
+			lastFilepath = filepath;
 		}
 	}
 	
@@ -135,6 +135,12 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			MouseExitScreenEvent mlse = gson.fromJson(message, MouseExitScreenEvent.class);
 			mouseOffscreen = false;
 			robot.mouseMove(mlse.fromRight == true ? 10 : width - 10, (int) (mlse.height * height));
+		} else if (e.type.equals("windowAck")) {
+			WindowAckEvent wae = gson.fromJson(message, WindowAckEvent.class);
+			if (wae.filepath == lastFilepath) {
+				File f = new File(lastFilepath);
+				fileTransfer.send(f);
+			}
 		}
 	}
 }
