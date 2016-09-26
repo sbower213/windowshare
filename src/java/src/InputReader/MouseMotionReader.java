@@ -13,6 +13,7 @@ import Networking.WindowShareNode;
 
 import java.awt.AWTException;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
@@ -94,6 +95,32 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			if (!waiting) {
 				waitAndSend(dx, dy);
 			}
+
+			if (DraggedWindowDetector.activeWindowIsDragged()) {
+				Rectangle windowBounds = DraggedWindowDetector.activeWindowBounds();
+				
+				if (windowBounds.getX() <= 0) {
+					try {
+						leaveScreen(e.getX(), e.getY(), false);
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				} else if (windowBounds.getMaxX() >= width) {
+					try {
+						leaveScreen(width - e.getX(), e.getY(), false);
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
 		} else if (e.getX() <= 0) {
 			try {
 				leaveScreen(e.getY(), false);
@@ -151,11 +178,15 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	}
 	
 	public void leaveScreen(int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
+		leaveScreen(0, h, fromRight);
+	}
+	
+	public void leaveScreen(int offset, int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!justJumped) {
 			mouseOffscreen = true;
 			robot.mouseMove(width/2, height/2);
 			
-			(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
+			(new MouseExitScreenEvent(offset, (1.0 * h) / height, true, fromRight)).send();
 			
 			if (DraggedWindowDetector.activeWindowIsDragged()) {
 				//System.out.println("ACTIVE WINDOW IS DRAGGED");
