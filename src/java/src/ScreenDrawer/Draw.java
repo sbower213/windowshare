@@ -22,6 +22,7 @@ import Networking.NetworkListener;
 import Networking.WindowShareServer;
 
 public class Draw implements NetworkListener<BufferedImage> {
+	final int SCALE = 4;
 	
 	private DragWindow w;
 	
@@ -68,7 +69,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 			 if (bg != null) {
 				 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				 int width = (int)screenSize.getWidth();
-				 this.setSize(width / 4, (int) ((bg.getHeight() * 1.0) / bg.getWidth() * width / 4));
+				 this.setSize(width / SCALE, (int) ((bg.getHeight() * 1.0) / bg.getWidth() * width / SCALE));
 				 g.drawImage(bg, 0, 0, getWidth(), getHeight(), null);
 			 }
 			 if (cursor != null) {
