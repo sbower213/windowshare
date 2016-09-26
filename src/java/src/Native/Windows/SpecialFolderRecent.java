@@ -20,7 +20,6 @@ public class SpecialFolderRecent {
 	  
       for (int i = 0; i < listOfFiles.length; i++) {
     	  files[i] = listOfFiles[i].getPath();
-    	  System.out.println(files[i]);
         /*if (listOfFiles[i].isFile()) {]
           //System.out.println("File " + listOfFiles[i].getName());
         } else if (listOfFiles[i].isDirectory()) {

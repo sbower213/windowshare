@@ -97,8 +97,28 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			if (!waiting) {
 				waitAndSend(dx, dy);
 			}
-
-			if (DraggedWindowDetector.activeWindowIsDragged()) {
+		} else if (e.getX() <= 0) {
+			try {
+				leaveScreen(e.getY(), false);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		} else if (e.getX() >= width) {
+			try {
+				leaveScreen(e.getY(), true);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		} else {
+			if (!applicationSent && DraggedWindowDetector.activeWindowIsDragged()) {
 				Rectangle windowBounds = DraggedWindowDetector.activeWindowBounds();
 				
 				if (windowBounds.getX() <= 0) {
@@ -126,26 +146,6 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				} else {
 					applicationSent = false;
 				}
-			}
-		} else if (e.getX() <= 0) {
-			try {
-				leaveScreen(e.getY(), false);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		} else if (e.getX() >= width) {
-			try {
-				leaveScreen(e.getY(), true);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
 		}
 	}

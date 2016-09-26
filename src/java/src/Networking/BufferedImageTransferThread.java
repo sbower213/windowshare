@@ -18,7 +18,6 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 		InputStream in = sock.getInputStream();
 		byte[] sizeBytes = readExactly(in, 4);
 		int size = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(sizeBytes).getInt(0);
-		System.out.println("Size: " + size);
 		byte[] imageBytes = readExactly(in, size);
 		ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
 	    return ImageIO.read(bais);
@@ -29,7 +28,6 @@ public class BufferedImageTransferThread extends TransferThread<BufferedImage> {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ImageIO.write(message, "jpg", baos);
 		byte[] bytes = baos.toByteArray();
-		System.out.println("Size: " + bytes.length);
 		byte[] lenBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bytes.length).array();
 		OutputStream out = sock.getOutputStream();
 		out.write(lenBytes);

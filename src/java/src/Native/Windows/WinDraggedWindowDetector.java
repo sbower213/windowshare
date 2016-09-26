@@ -20,7 +20,6 @@ public class WinDraggedWindowDetector {
 		HWND wnd = info.hwndMoveSize;
 		RECT rect = new RECT();
 		User32.INSTANCE.GetWindowRect(wnd, rect);
-		System.out.println(rect);
 		
 		// GUI_INMOVESIZE 0x00000002    https://msdn.microsoft.com/en-us/library/ms632604(v=vs.85).aspx
 		return ((flags & 0x00000002) == 0) ? false : true;
