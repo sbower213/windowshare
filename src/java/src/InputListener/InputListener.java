@@ -48,6 +48,7 @@ public class InputListener {
 	BufferedImage spinner;
 	File dataFile;
 	boolean justJumped;
+	boolean mouseEnteredScreen;
 	String[] chromeUrls;
 	
 	Queue<MouseEvent> eventQueue;
@@ -167,7 +168,7 @@ public class InputListener {
 						newX = Math.min(Math.max(0, mouseX + dx), width - 1);
 						newY = Math.min(Math.max(0, mouseY + dy), height - 1);
 						////System.out.println(newX + ", " + newY);
-						if (!justJumped && newX >= width - 1 || newX <= 0) {
+						if (!justJumped && mouseEnteredScreen && newX >= width - 1 || newX <= 0) {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, false, newX <= 0);
 							e.send();
 							remoteControl = false;
@@ -176,6 +177,8 @@ public class InputListener {
 							mouseY =  newY;
 							break;
 						}
+						if (!mouseEnteredScreen && newX < width && newX > 0)
+							mouseEnteredScreen = true;
 						cursorWindow.setLocation(newX, newY);
 						if (mouseDown) {
 							robot.mouseMove(newX, newY);
@@ -277,9 +280,10 @@ public class InputListener {
 					int width = (int)screenSize.getWidth();
 					int height = (int)screenSize.getHeight();
 					if (mlose.fromRight)
-						mouseX = 10;
+						mouseX = (int)mlose.offset;
 					else
-						mouseX = width - 10;
+						mouseX = width - (int)mlose.offset;
+					mouseEnteredScreen = false;
 					mouseY = (int) (height * mlose.height); 
 					//System.out.println("init: " + mouseX + ", " + mouseY);
 					cursorWindow.setVisible(true);

@@ -153,6 +153,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	public void leaveScreen(int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!justJumped) {
 			mouseOffscreen = true;
+			robot.mouseMove(width/2, height/2);
 			
 			(new MouseExitScreenEvent((1.0 * h) / height, true, fromRight)).send();
 			
