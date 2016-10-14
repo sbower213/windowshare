@@ -192,14 +192,15 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	
 	public void leaveScreen(int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!applicationSent) {
-			sendApplication(0, h, fromRight);
+			sendApplication(5, h, fromRight);
 		}
 		captureMouse();
 	}
 	
-	public void sendApplication(int offset, int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
+	public void sendApplication(int startOffset, int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!justJumped) {
-			(new MouseExitScreenEvent(offset, (1.0 * h) / height, 0, true, fromRight)).send();
+			System.out.println("Hello?");
+			(new MouseExitScreenEvent(startOffset, (1.0 * h) / height, 0, true, fromRight)).send();
 			
 			if (DraggedWindowDetector.activeWindowIsDragged()) {
 				//System.out.println("ACTIVE WINDOW IS DRAGGED");
