@@ -147,10 +147,12 @@ public class InputListener {
 				MouseEvent event = eventQueue.remove();
 				////System.out.println(event.type);
 				if (event instanceof MouseMoveEvent) {
+					System.out.println("MouseMove");
 					if (!remoteControl) {
 						/* only control mouse if it was transferred from original computer */
 						continue;
 					}
+					System.out.println("after rc");
 					// interpolate the current position with the new position.
 					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 					int width = (int)screenSize.getWidth();
@@ -168,7 +170,9 @@ public class InputListener {
 						newX = Math.min(Math.max(0, mouseX + dx), width - 1);
 						newY = Math.min(Math.max(0, mouseY + dy), height - 1);
 						//System.out.println(newX + ", " + newY);
-						if (!justJumped && mouseEnteredScreen && newX >= width - 1 || newX <= 0) {
+						//System.out.println("MES: " + mouseEnteredScreen);
+						if (!justJumped && mouseEnteredScreen && (newX >= width - 1 || newX <= 0)) {
+							System.out.println("exiting");
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, 0, false, newX <= 0);
 							e.send();
 							remoteControl = false;
@@ -279,13 +283,14 @@ public class InputListener {
 					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 					int width = (int)screenSize.getWidth();
 					int height = (int)screenSize.getHeight();
+					System.out.println("from right: " + mlose.fromRight);
 					if (mlose.fromRight)
 						mouseX = (int)mlose.startOffset;
 					else
 						mouseX = width - (int)mlose.startOffset;
 					mouseEnteredScreen = false;
 					mouseY = (int) (height * mlose.height); 
-					//System.out.println("init: " + mouseX + ", " + mouseY);
+					System.out.println("init: " + mouseX + ", " + mouseY);
 					cursorWindow.setVisible(true);
 					cursorWindow.setLocation(mouseX, mouseY);
 					

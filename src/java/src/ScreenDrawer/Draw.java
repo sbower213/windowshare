@@ -70,6 +70,11 @@ public class Draw implements NetworkListener<BufferedImage> {
 				 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				 int width = (int)screenSize.getWidth();
 				 this.setSize(width / SCALE, (int) ((bg.getHeight() * 1.0) / bg.getWidth() * width / SCALE));
+				 System.out.println("width: " + getWidth());
+				 try {
+				 File output = new File("C:\\Users\\jnnnnnnnnnna\\Desktop\\test.png");
+				 ImageIO.write(bg, "png", output);
+				 } catch (Exception e){}
 				 g.drawImage(bg, 0, 0, getWidth(), getHeight(), null);
 			 }
 			 if (cursor != null) {
@@ -86,6 +91,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 	public Window defineWindow(BufferedImage image, BufferedImage bg){
 		w.cursor = image;
 		w.bg = bg;
+		System.out.println("Define window");
 		w.repaint();
 		return w;
 	}
