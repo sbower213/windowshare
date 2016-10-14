@@ -84,6 +84,8 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	            f.setShort(e, (short) 0x01);
 			} catch (Exception e1) {
 			}
+		} else {
+			applicationSent = false;
 		}
 	}
 
@@ -123,7 +125,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				
 				if (windowBounds.getX() <= 0) {
 					try {
-						sendApplication(e.getX(), e.getY(), false);
+						sendApplication(-e.getX(), e.getY(), false);
 						applicationSent = true;
 					} catch (FileNotFoundException e1) {
 						// TODO Auto-generated catch block
@@ -134,7 +136,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 					}
 				} else if (windowBounds.getMaxX() >= width) {
 					try {
-						sendApplication(width - e.getX(), e.getY(), false);
+						sendApplication(width + e.getX(), e.getY(), false);
 						applicationSent = true;
 					} catch (FileNotFoundException e1) {
 						// TODO Auto-generated catch block
@@ -192,14 +194,13 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	
 	public void leaveScreen(int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!applicationSent) {
-			sendApplication(5, h, fromRight);
+			sendApplication(0, h, fromRight);
 		}
 		captureMouse();
 	}
 	
 	public void sendApplication(int startOffset, int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!justJumped) {
-			System.out.println("Hello?");
 			(new MouseExitScreenEvent(startOffset, (1.0 * h) / height, 0, true, fromRight)).send();
 			
 			if (DraggedWindowDetector.activeWindowIsDragged()) {
