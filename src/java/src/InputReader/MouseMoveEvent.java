@@ -13,7 +13,7 @@ public class MouseMoveEvent extends MouseEvent {
 		type = "move";
 		dx = _dx;
 		dy = _dy;
-		System.out.println("dx: " + _dx + ", dy: " + _dy);
+		//System.out.println("dx: " + _dx + ", dy: " + _dy);
 	}
 	
 	public String toString() {

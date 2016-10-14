@@ -21,8 +21,9 @@ public class MouseEvent {
 		if (gson == null) {
 			gson = new Gson();
 		}
+		/*
 		System.out.println(this.toString());
-		System.out.println(gson.toJson(this));
+		System.out.println(gson.toJson(this));//*/
 		network.send(gson.toJson(this));
 	}
 	

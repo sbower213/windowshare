@@ -167,7 +167,7 @@ public class InputListener {
 						int dy = (int) (mme.dy * frac * height);
 						newX = Math.min(Math.max(0, mouseX + dx), width - 1);
 						newY = Math.min(Math.max(0, mouseY + dy), height - 1);
-						////System.out.println(newX + ", " + newY);
+						//System.out.println(newX + ", " + newY);
 						if (!justJumped && mouseEnteredScreen && newX >= width - 1 || newX <= 0) {
 							MouseExitScreenEvent e = new MouseExitScreenEvent((1.0 * newY) / height, 0, false, newX <= 0);
 							e.send();
