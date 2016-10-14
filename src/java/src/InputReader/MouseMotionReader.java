@@ -28,6 +28,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	static final boolean hasChromeExtension = false;
 	
 	int width, height;
+	int transferX, transferY;
 	Robot robot;
 	boolean waiting;
 	boolean mouseOffscreen;
@@ -85,6 +86,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			} catch (Exception e1) {
 			}
 		} else {
+			System.out.println("cancelling due to release");
 			applicationSent = false;
 		}
 	}
@@ -120,34 +122,50 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				e1.printStackTrace();
 			}
 		} else {
-			if (!applicationSent && DraggedWindowDetector.activeWindowIsDragged()) {
+			if (DraggedWindowDetector.activeWindowIsDragged()) {
 				Rectangle windowBounds = DraggedWindowDetector.activeWindowBounds();
 				
-				if (windowBounds.getX() <= 0) {
-					try {
-						sendApplication(-e.getX(), e.getY(), false);
-						applicationSent = true;
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+				if (!applicationSent) {
+					if (windowBounds.getX() <= 0) {
+						try {
+							sendApplication(-e.getX(), e.getY(), false);
+							applicationSent = true;
+							transferX = e.getX();
+							transferY = e.getY();
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					} else if (windowBounds.getMaxX() >= width) {
+						try {
+							sendApplication(-(width - e.getX()), e.getY(), true);
+							applicationSent = true;
+							transferX = e.getX();
+							transferY = e.getY();
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
-				} else if (windowBounds.getMaxX() >= width) {
-					try {
-						sendApplication(width + e.getX(), e.getY(), false);
-						applicationSent = true;
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				} else {
+				} else if (windowBounds.getX() > 0 && windowBounds.getMaxX() < width) {
+					System.out.println("cancelling");
 					applicationSent = false;
 				}
+			}
+		}
+		
+		if (!mouseOffscreen && applicationSent) {
+			int dx = e.getX() - transferX;
+			int dy = e.getY() - transferY;
+			
+			if (!waiting) {
+				waitAndSend(dx, dy);
 			}
 		}
 	}
@@ -201,6 +219,7 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 	
 	public void sendApplication(int startOffset, int h, boolean fromRight) throws FileNotFoundException, InterruptedException {
 		if (!justJumped) {
+			System.out.println("Send application");
 			(new MouseExitScreenEvent(startOffset, (1.0 * h) / height, 0, true, fromRight)).send();
 			
 			if (DraggedWindowDetector.activeWindowIsDragged()) {
@@ -245,8 +264,15 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 				MouseMoveEvent mme = new MouseMoveEvent((dx * 1.0f) / width, (dy * 1.0f) / height);
 				if (mme.dx != 0 || mme.dy != 0) {
 					mme.send();
+				} else {
+					System.out.println("movement 0");
 				}
-				robot.mouseMove(width/2, height/2);
+				if (mouseOffscreen) {
+					robot.mouseMove(width/2, height/2);
+				} else {
+					transferX += dx;
+					transferY += dy;
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}		// Roughly 1/30 seconds
@@ -265,7 +291,8 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			//System.out.println("mouse control is back");
 			MouseExitScreenEvent mlse = gson.fromJson(message, MouseExitScreenEvent.class);
 			mouseOffscreen = false;
-			robot.mouseMove(mlse.fromRight == true ? 10 : width - 10, (int) (mlse.height * height));
+			applicationSent = false;
+			robot.mouseMove(!mlse.fromRight ? 10 : width - 10, (int) (mlse.height * height));
 			
 			justJumped = true;
 			Thread t = new Thread(() -> {
@@ -280,10 +307,11 @@ public class MouseMotionReader implements NativeMouseInputListener, NetworkListe
 			t.start();
 		} else if (e.type.equals("windowAck")) {
 			WindowAckEvent wae = gson.fromJson(message, WindowAckEvent.class);
-			//System.out.println("EVENT OCCURED: " + wae);
+			System.out.println("EVENT OCCURED: " + wae);
 			if (lastFilepath != null) {
 				File f = new File(lastFilepath);
 				fileTransfer.send(f);
+				System.out.println("sent file " + lastFilepath);
 			}
 		}
 	}
