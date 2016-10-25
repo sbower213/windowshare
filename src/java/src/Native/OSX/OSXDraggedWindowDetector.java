@@ -7,7 +7,22 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 public class OSXDraggedWindowDetector {
+	public static void main(String[] args) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println(activeWindowBounds());
+	}
+	
 	public static boolean activeWindowIsDragged() {
 		System.out.println("Calling active window drag");
 		MouseInfo.getPointerInfo().getLocation();
@@ -20,16 +35,11 @@ public class OSXDraggedWindowDetector {
 	
 	public static Rectangle activeWindowBounds() {
 		System.out.println("Calling active window boudn");
-		String script = "";
-		script += "tell application \"System Events\"\n";
-		script += "  set frontApp to name of first application process whose frontmost is true\n";
-		script += "end tell\n";
-		script += "tell application frontApp\n";
-		script += "  set b to bounds of window 1\n";
-		script += "end tell\n";
-		script += "do shell script \"echo \" & quoted form of b";
+		ScriptEngineManager mgr = new ScriptEngineManager();
+		ScriptEngine engine = mgr.getEngineByName("AppleScript");		// Honestly don't know why this fixes it
+		
 		Runtime runtime = Runtime.getRuntime();
-		String[] args = { "osascript", "-e", script};
+		String[] args = { "osascript", "WindowBounds.scpt"};
 		try {
 			Process process = runtime.exec(args);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
