@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -22,7 +23,7 @@ import Networking.NetworkListener;
 import Networking.WindowShareServer;
 
 public class Draw implements NetworkListener<BufferedImage> {
-	final int SCALE = 4;
+	final int SCALE = 1;
 	
 	private DragWindow w;
 	
@@ -30,7 +31,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 		w = new DragWindow();
 	}
 	
-	public static void main(String[] args) throws InterruptedException, AWTException {
+	/*public static void main(String[] args) throws InterruptedException, AWTException {
 		WindowShareServer<BufferedImage> server = new WindowShareServer<BufferedImage>
 			(WindowShareServer.FILE_PORT, BufferedImageTransferThread.class);
 
@@ -38,7 +39,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 		Thread t = new Thread(server);
 		t.start();
 		t.join();
-	}
+	}*/
 
 	@Override
 	public void process(BufferedImage message) {
@@ -61,7 +62,7 @@ public class Draw implements NetworkListener<BufferedImage> {
 		public DragWindow() {
 			super(null);
 			setAlwaysOnTop(true);
-			setBounds(getGraphicsConfiguration().getBounds());
+			setBounds(new Rectangle(0,0,300,300));//getGraphicsConfiguration().getBounds());
 			setBackground(new Color(0, true));
 		}
 		
@@ -71,13 +72,12 @@ public class Draw implements NetworkListener<BufferedImage> {
 				 int width = (int)screenSize.getWidth();
 				 this.setSize(width / SCALE, (int) ((bg.getHeight() * 1.0) / bg.getWidth() * width / SCALE));
 				 System.out.println("width: " + getWidth());
-				 try {
-				 File output = new File("C:\\Users\\jnnnnnnnnnna\\Desktop\\test.png");
-				 ImageIO.write(bg, "png", output);
-				 } catch (Exception e){}
 				 g.drawImage(bg, 0, 0, getWidth(), getHeight(), null);
+			 } else {
+				 System.out.println("No bg");
 			 }
 			 if (cursor != null) {
+				 //this.setSize(cursor.getWidth(), cursor.getHeight());
 				 g.drawImage(cursor, 0, 0, null);
 			 }
 		}
@@ -91,7 +91,6 @@ public class Draw implements NetworkListener<BufferedImage> {
 	public Window defineWindow(BufferedImage image, BufferedImage bg){
 		w.cursor = image;
 		w.bg = bg;
-		System.out.println("Define window");
 		w.repaint();
 		return w;
 	}

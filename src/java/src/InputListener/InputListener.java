@@ -114,12 +114,14 @@ public class InputListener {
 		@Override
 		public void process(File message) {
 			dataFile = message;
+			System.out.println("got file");
 		}
 	}
 	
 	public class BufferedImageListener implements NetworkListener<BufferedImage> {
 		@Override
 		public void process(BufferedImage message) {
+			System.out.println("got image");
 			draw.defineWindow(cursor, message);
 		}
 	}
@@ -147,12 +149,10 @@ public class InputListener {
 				MouseEvent event = eventQueue.remove();
 				////System.out.println(event.type);
 				if (event instanceof MouseMoveEvent) {
-					System.out.println("MouseMove");
 					if (!remoteControl) {
 						/* only control mouse if it was transferred from original computer */
 						continue;
 					}
-					System.out.println("after rc");
 					// interpolate the current position with the new position.
 					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 					int width = (int)screenSize.getWidth();
@@ -222,13 +222,14 @@ public class InputListener {
 						robot.mouseMove(origMouseX, origMouseY);
 						robot.waitForIdle();
 						mouseDown = false;
+						System.out.println("lastExecName: " + lastExecName);
 						if (lastExecName != null) {
 							if (lastPathName != null) {
 								new Thread(new Runnable() {
 
 									@Override
 									public void run() {
-										//System.out.println("Thread waiting for file");
+										System.out.println("Thread waiting for file");
 										draw.defineWindow(spinner, null);
 										while (dataFile == null) {
 											try {
@@ -238,9 +239,11 @@ public class InputListener {
 											}
 										}
 										draw.defineWindow(cursor, null);
-										//System.out.println("File is here.");
+										System.out.println("File is here.");
 										try {
 											DraggedWindowDetector.openFile(lastExecName, dataFile.getAbsolutePath());
+											System.out.println("opening " + dataFile.getAbsolutePath()
+												+ " with " + lastExecName);
 											dataFile = null;
 											lastPathName = null;
 											lastExecName = null;
@@ -255,6 +258,7 @@ public class InputListener {
 								draw.defineWindow(cursor, null);
 								try {
 									DraggedWindowDetector.openFile(lastExecName, null);
+									System.out.println("open application: " + lastExecName);
 									
 									if (lastExecName.equalsIgnoreCase("chrome")) {
 										while(chromeUrls == null) {

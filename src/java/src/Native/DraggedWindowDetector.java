@@ -123,10 +123,11 @@ public class DraggedWindowDetector {
 	}
 	
 	public static void openFile(String exeName, String filePath) throws IOException {
-		//System.out.println("opening " + filePath + ", exe: " + exeName);
+		System.out.println("opening " + filePath + ", exe: " + exeName);
 		if (filePath == null) {
 			String closestExe = closestExecutableTo(exeName);
 			if (closestExe == null) {
+				System.out.println("couldn't find exe");
 				return;
 			} else {
 				if (OsCheck.getOperatingSystemType() == OSType.Windows) {
